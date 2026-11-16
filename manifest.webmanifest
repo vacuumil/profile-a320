@@ -1,12 +1,12 @@
 {
-  "name": "Профиль снижения A320/A321",
-  "short_name": "Профиль A320",
+  "name": "Векторение и профиль снижения A320/A321",
+  "short_name": "Векторение A320",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0a0f1c",
-  "theme_color": "#0a0f1c",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "lang": "ru",
   "icons": [
     {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},

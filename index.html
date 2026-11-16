@@ -2,630 +2,1191 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Профиль A320">
-<meta name="theme-color" content="#0a0f1c">
+<meta name="apple-mobile-web-app-title" content="Векторение A320">
+<meta name="theme-color" content="#000000">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
-<title>Профиль A320</title>
+<title>Векторение A320 — Профиль снижения</title>
 <style>
-:root{
-  color-scheme:dark;
-  --bg:#0a0f1c; --p1:#111a2e; --p2:#18233d; --ln:#2a3a60; --tx:#eaf0fa; --mu:#93a3c4;
-  --ac:#4cc2ff; --ok:#23c26b; --wa:#f4a62a; --ba:#ff4d4d; --gs:#ffd166; --mg:#e056fd; --key:#1c2846;
+:root {
+  color-scheme: dark;
+  --bg: #000000;
+  --card: #0c111a;
+  --card-sub: #131b29;
+  --border: #223048;
+  --border-focus: #3b82f6;
+  --tx: #f1f5f9;
+  --tx-muted: #8494ab;
+  --ok: #10b981;
+  --ok-bg: #064e3b;
+  --warn: #f59e0b;
+  --warn-bg: #78350f;
+  --orange: #f97316;
+  --orange-bg: #7c2d12;
+  --danger: #ef4444;
+  --danger-bg: #7f1d1d;
+  --accent: #38bdf8;
+  --key-bg: #1e293b;
+  --key-active: #334155;
 }
-:root[data-theme="light"]{ color-scheme:light; --bg:#eef2f8; --p1:#fff; --p2:#f2f5fb; --ln:#c9d4e5; --tx:#0f1d36; --mu:#5a6b87; --ac:#0b72c9; --ok:#169a52; --wa:#c27a00; --ba:#d32f2f; --gs:#b8860b; --mg:#9c27b0; --key:#e4eaf4; }
-:root[data-theme="night"]{ --bg:#000; --p1:#0b0404; --p2:#140707; --ln:#3b1515; --tx:#ff9c8c; --mu:#a65a4e; --ac:#ff7a5c; --ok:#d6b04a; --wa:#ff9b3d; --ba:#ff3b3b; --gs:#ffb36b; --mg:#ff6fa8; --key:#1a0909; }
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--p1)}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;min-width:0}
-html,body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.3 -apple-system,"SF Pro Text",Segoe UI,Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%;overflow-x:hidden}
-button{font:inherit;color:var(--tx);background:var(--p2);border:1px solid var(--ln);border-radius:12px;padding:10px 12px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;line-height:1.15}
-button:active{filter:brightness(1.35)}
-button.on{background:var(--ac);border-color:var(--ac);color:#00111d;font-weight:700}
-input,select{font:inherit;color:var(--tx);background:var(--p2);border:1px solid var(--ln);border-radius:10px;padding:8px 9px;max-width:100%}
-.mu{color:var(--mu)} .sm{font-size:13px}
-/* ---------- шапка ---------- */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--p1);border-bottom:1px solid var(--ln);padding-block:6px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:6px;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.top::-webkit-scrollbar{display:none}
-.top button{flex:0 0 auto;white-space:nowrap;padding:8px 11px;font-size:15px}
-.top .chip{font-weight:700;border-radius:999px;max-width:220px;overflow:hidden;text-overflow:ellipsis}
-.top .gap{flex:1 0 8px}
-main{padding-block:10px max(20px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1400px;margin:0 auto}
-.view{display:none}.view.on{display:block}
-.card{background:var(--p1);border:1px solid var(--ln);border-radius:16px;padding:10px;margin-bottom:10px}
-.h{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;margin:0 0 8px;font-weight:700}
-/* ---------- главный экран ---------- */
-.main{display:grid;grid-template-columns:minmax(0,370px) minmax(0,1fr);gap:10px;align-items:start}
-@media (max-width:760px){ .main{grid-template-columns:minmax(0,1fr)} .right{order:-1} }
-.seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px}
-.seg button{padding:9px 2px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:8px 0}
-.fld{background:var(--p2);border:2px solid var(--ln);border-radius:13px;padding:6px 8px;display:flex;flex-direction:column;justify-content:space-between}
-.fld.sel{border-color:var(--ac);box-shadow:0 0 0 2px color-mix(in srgb,var(--ac) 30%,transparent)}
-.fld .lb{font-size:11px;color:var(--mu);font-weight:700;text-transform:uppercase;line-height:1.2;overflow-wrap:anywhere}
-.fld .vl{font-size:clamp(20px,2.6vw,30px);font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15;margin:2px 0}
-.fld .un{font-size:12px;color:var(--mu);font-weight:600;margin-left:3px}
-.fld .st{display:grid;grid-template-columns:1fr 1fr;gap:4px}
-.fld .st button{padding:6px 0;font-size:13px;border-radius:9px}
-.fld.wide{grid-column:1 / -1}
-.fld.ro{border-style:dashed}
-.keypad{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-top:6px}
-.keypad button{background:var(--key);font-size:clamp(18px,2.4vw,24px);font-weight:700;padding:11px 0;border-radius:12px}
-.keypad .fn{font-size:16px}
-.keypad .go{background:var(--ac);color:#00111d;grid-column:span 2}
-@media (max-height:860px) and (min-width:761px){
-  .keypad button{padding:8px 0} .fld{padding:4px 7px} .fld .vl{font-size:clamp(18px,2.2vw,26px)} .fld .st button{padding:4px 0}
-  .fields{margin:6px 0;gap:5px} .cfg button,.seg button{padding:7px 2px} .wsrc button{padding:5px 2px}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
-.cfg{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
-.cfg button{padding:9px 0;font-size:13px;font-weight:700;white-space:nowrap}
-.wsrc{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px}
-.wsrc button{font-size:13px;padding:7px 2px}
-/* статус */
-.status{border-radius:18px;padding:12px 14px;border:3px solid var(--ln);margin-bottom:10px}
-.status .big{font-size:clamp(26px,4.2vw,44px);font-weight:900;line-height:1.05;overflow-wrap:anywhere}
-.status .act{font-size:clamp(16px,2vw,21px);font-weight:700;margin-top:6px}
-.status .sub{font-size:14px;margin-top:4px;color:var(--mu)}
-.s-ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 15%,var(--p1))} .s-ok .big{color:var(--ok)}
-.s-wa{border-color:var(--wa);background:color-mix(in srgb,var(--wa) 15%,var(--p1))} .s-wa .big{color:var(--wa)}
-.s-ba{border-color:var(--ba);background:color-mix(in srgb,var(--ba) 17%,var(--p1))} .s-ba .big{color:var(--ba)}
-.meter{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}
-.meter div{border-radius:10px;padding:6px 8px;background:var(--p2);border:1px solid var(--ln);font-size:12px;line-height:1.25}
-.meter b{display:block;font-size:clamp(16px,2vw,20px);font-variant-numeric:tabular-nums}
-.meter .y{border-color:var(--ok)} .meter .n{opacity:.65}
-.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:6px}
-.strip div{background:var(--p2);border:1px solid var(--ln);border-radius:12px;padding:6px 9px}
-.strip span{display:block;font-size:11px;color:var(--mu);font-weight:700;text-transform:uppercase;line-height:1.2}
-.strip b{font-size:clamp(16px,2vw,21px);font-variant-numeric:tabular-nums;white-space:nowrap}
-/* план */
-.plan .r{display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 2px;border-bottom:1px solid var(--ln)}
-.plan .d{font-weight:800;font-size:clamp(15px,1.9vw,19px);text-align:right;font-variant-numeric:tabular-nums}
-.plan .t{font-size:clamp(14px,1.7vw,16px);overflow-wrap:anywhere}
-.plan .a{font-size:13px;color:var(--mu);white-space:nowrap;font-variant-numeric:tabular-nums}
-.plan .now .d,.plan .now .t{color:var(--wa)}
-.tag{display:inline-block;font-size:11px;font-weight:800;padding:1px 6px;border-radius:7px;margin-right:6px;background:var(--p2);border:1px solid var(--ln);vertical-align:1px}
-svg{width:100%;height:auto;display:block;background:var(--p2);border-radius:12px}
-.adv div{border-left:4px solid var(--wa);background:var(--p2);border-radius:8px;padding:6px 10px;margin:5px 0;font-size:14px;overflow-wrap:anywhere}
-.adv div.i{border-color:var(--ok)} .adv div.b{border-color:var(--ba)}
-/* настройки */
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:10px}
-.row{display:flex;align-items:center;gap:8px;margin:7px 0;flex-wrap:wrap}
-.row label{flex:1 1 150px;font-size:14px;color:var(--mu)}
-.row input{width:110px;text-align:right;font-size:17px}
-.row select{flex:0 1 200px}
-.row .u{font-size:12px;color:var(--mu);width:24px}
-.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-table.t{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
-table.t th,table.t td{border-bottom:1px solid var(--ln);padding:5px 6px;text-align:right;white-space:nowrap}
-table.t th:first-child,table.t td:first-child{text-align:left}
-table.t th{color:var(--mu)}
-table.t input{width:76px;text-align:right;font-size:16px;padding:6px}
-.apt{display:flex;align-items:center;gap:6px;padding:7px;border:1px solid var(--ln);border-radius:12px;margin:6px 0;background:var(--p2);flex-wrap:wrap}
-.apt b{flex:1 1 120px;overflow-wrap:anywhere}
-.apt input{width:80px}
-.help p,.help li{font-size:15px;line-height:1.45}
-.warnbox{border-left:4px solid var(--ba);background:var(--p2);padding:8px 12px;border-radius:8px}
-.btnrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+
+body {
+  background-color: var(--bg);
+  color: var(--tx);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
+  padding-top: max(8px, env(safe-area-inset-top, 8px));
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  padding-left: max(12px, env(safe-area-inset-left, 12px));
+  padding-right: max(12px, env(safe-area-inset-right, 12px));
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.header-chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.header-chips::-webkit-scrollbar { display: none; }
+.chip {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--tx);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+.chip:active { background: var(--key-active); }
+.chip-accent { border-color: var(--accent); color: var(--accent); }
+.btn-reset {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--tx-muted);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.btn-reset:active { background: var(--key-active); color: var(--tx); }
+
+/* Main Result Card */
+.result-card {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.verdict-banner {
+  border-radius: 12px;
+  padding: 10px 12px;
+  text-align: center;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.verdict-title {
+  font-size: clamp(24px, 4.5vw, 36px);
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+.verdict-subtitle {
+  font-size: clamp(14px, 2.2vw, 17px);
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+/* Status themes */
+.status-ok { background: var(--ok-bg); border: 2px solid var(--ok); color: #ecfdf5; }
+.status-ok .verdict-title { color: #34d399; }
+.status-warn { background: var(--warn-bg); border: 2px solid var(--warn); color: #fffbeb; }
+.status-warn .verdict-title { color: #fbbf24; }
+.status-orange { background: var(--orange-bg); border: 2px solid var(--orange); color: #fff7ed; }
+.status-orange .verdict-title { color: #fb923c; }
+.status-danger { background: var(--danger-bg); border: 2px solid var(--danger); color: #fef2f2; }
+.status-danger .verdict-title { color: #f87171; }
+
+/* Metrics Row inside Result Card */
+.result-metrics {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+  background: var(--card-sub);
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.metric-box {
+  display: flex;
+  flex-direction: column;
+}
+.metric-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tx-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.metric-val {
+  font-size: clamp(18px, 2.8vw, 24px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--tx);
+  line-height: 1.2;
+}
+.metric-val.highlight { color: var(--accent); }
+.metric-sub {
+  font-size: 11px;
+  color: var(--tx-muted);
+  font-weight: 500;
+}
+
+/* 3 Scenarios Grid */
+.scenarios-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.sc-box {
+  background: var(--card-sub);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.sc-box.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.sc-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tx-muted);
+  margin-bottom: 2px;
+}
+.sc-margin {
+  font-size: clamp(16px, 2.4vw, 22px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+.sc-margin.pos { color: var(--ok); }
+.sc-margin.neg { color: var(--danger); }
+.sc-req {
+  font-size: 10px;
+  color: var(--tx-muted);
+  margin-top: 2px;
+}
+
+/* 4 Input Fields Grid */
+.inputs-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+@media (max-width: 640px) {
+  .inputs-container {
+    grid-template-columns: 1fr;
+  }
+}
+.field-card {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.field-card.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+.field-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.field-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--tx-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.field-unit {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tx-muted);
+}
+.field-display {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  padding: 6px 0;
+  cursor: pointer;
+}
+.field-number {
+  font-size: clamp(32px, 5.2vw, 44px);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--tx);
+}
+.field-display:active .field-number {
+  color: var(--accent);
+}
+.field-steppers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+.btn-step {
+  background: var(--key-bg);
+  border: 1px solid var(--border);
+  color: var(--tx);
+  border-radius: 10px;
+  padding: 10px 0;
+  font-size: clamp(14px, 2vw, 17px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.btn-step:active {
+  background: var(--key-active);
+  transform: scale(0.97);
+}
+.btn-step.sign-toggle {
+  background: var(--card-sub);
+  color: var(--accent);
+  border-color: var(--border);
+}
+
+/* Footer / Settings Button */
+.footer-bar {
+  margin-top: auto;
+  display: flex;
+  gap: 8px;
+}
+.btn-settings-open {
+  flex: 1;
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  color: var(--tx);
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.btn-settings-open:active { background: var(--key-active); }
+
+/* Modal / Bottom Sheet */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.bottom-sheet {
+  background: #0a0f18;
+  border: 2px solid var(--border);
+  border-bottom: none;
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-width: 680px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 16px 18px max(24px, env(safe-area-inset-bottom, 24px));
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
+}
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+.sheet-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--tx);
+}
+.btn-close {
+  background: var(--key-bg);
+  border: 1px solid var(--border);
+  color: var(--tx);
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.setting-section {
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.setting-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px 10px;
+}
+.setting-item label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tx-muted);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.setting-item input, .setting-item select {
+  width: 100%;
+  background: var(--card-sub);
+  border: 1px solid var(--border);
+  color: var(--tx);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 6px 8px;
+  border-radius: 8px;
+  outline: none;
+}
+.setting-item input:focus, .setting-item select:focus {
+  border-color: var(--accent);
+}
+
+/* Numpad Drawer */
+.numpad-sheet {
+  background: #090e17;
+  border: 2px solid var(--border);
+  border-bottom: none;
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 14px 16px max(20px, env(safe-area-inset-bottom, 20px));
+}
+.numpad-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.numpad-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--tx-muted);
+  text-transform: uppercase;
+}
+.numpad-screen {
+  background: var(--card-sub);
+  border: 1.5px solid var(--accent);
+  border-radius: 12px;
+  padding: 8px 14px;
+  text-align: right;
+  font-size: 32px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 12px;
+  min-height: 52px;
+}
+.numpad-keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.num-btn {
+  background: var(--key-bg);
+  border: 1px solid var(--border);
+  color: var(--tx);
+  font-size: 24px;
+  font-weight: 800;
+  border-radius: 12px;
+  padding: 12px 0;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.num-btn:active {
+  background: var(--key-active);
+  transform: scale(0.96);
+}
+.num-btn.fn {
+  font-size: 18px;
+  color: var(--tx-muted);
+}
+.num-btn.go {
+  background: var(--accent);
+  color: #021422;
+  border-color: var(--accent);
+  font-size: 19px;
+  grid-column: span 2;
+}
+.num-btn.go:active {
+  filter: brightness(1.2);
+}
 </style>
 </head>
 <body>
-<div class="top" id="top">
-  <button class="chip" id="aptChip" data-go="set">—</button>
-  <button class="chip" id="typeChip" data-go="set">—</button>
-  <span class="gap"></span>
-  <button data-v="app" class="on">Заход</button>
-  <button data-v="wind">Ветер OFP</button>
-  <button data-v="set">Настройка</button>
-  <button data-v="tod">TOD</button>
-  <button data-v="tbl">Таблицы</button>
-  <button data-v="cal">Калибровка</button>
-  <button data-v="help">Справка</button>
-  <button data-t="dark">●</button><button data-t="light">○</button><button data-t="night" style="color:#ff6b5c">●</button>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-chips">
+    <button class="chip chip-accent" id="btnRwyChip" onclick="openSettings('rwy')">
+      🛬 <span id="chipRwyName">UUEE 24R</span> · Elev <span id="chipRwyElev">623</span>' · G/S <span id="chipRwyGa">3.0</span>°
+    </button>
+    <button class="chip" id="btnAcChip" onclick="openSettings('ac')">
+      ✈️ <span id="chipAcType">A320ceo</span> · <span id="chipAcGw">64</span>t · VAPP <span id="chipAcVapp">136</span>
+    </button>
+  </div>
+  <button class="btn-reset" onclick="resetToDefaults()" title="Сбросить к типовым">↺</button>
+</header>
+
+<!-- Main Result Card -->
+<section class="result-card" id="resultCard">
+  <div class="verdict-banner status-ok" id="verdictBanner">
+    <div class="verdict-title" id="verdictTitle">УСПЕВАЕМ</div>
+    <div class="verdict-subtitle" id="verdictSub">Малый газ (CLEAN). Запас +3.5 NM</div>
+  </div>
+
+  <div class="result-metrics">
+    <div class="metric-box">
+      <div class="metric-lbl">Требуемая V/S</div>
+      <div class="metric-val highlight" id="reqVsVal">−750</div>
+      <div class="metric-sub" id="reqFpaVal">FPA: −2.1°</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-lbl">Путевая GS</div>
+      <div class="metric-val" id="gsVal">235 kt</div>
+      <div class="metric-sub" id="tasVal">TAS 235</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-lbl">Высота G/S тут</div>
+      <div class="metric-val" id="gsAltVal">5 120'</div>
+      <div class="metric-sub" id="vdevVal">Ниже G/S</div>
+    </div>
+  </div>
+
+  <div class="scenarios-grid">
+    <div class="sc-box" id="scBox0">
+      <div class="sc-title">1. CLEAN 2.5°</div>
+      <div class="sc-margin pos" id="scMargin0">+3.5 NM</div>
+      <div class="sc-req" id="scReq0">нужно 18.5</div>
+    </div>
+    <div class="sc-box" id="scBox1">
+      <div class="sc-title">2. + ИНТЕРЦЕПТ.</div>
+      <div class="sc-margin pos" id="scMargin1">+7.8 NM</div>
+      <div class="sc-req" id="scReq1">нужно 14.2</div>
+    </div>
+    <div class="sc-box" id="scBox2">
+      <div class="sc-title">3. ШАССИ+ИНТЕРЦ.</div>
+      <div class="sc-margin pos" id="scMargin2">+9.6 NM</div>
+      <div class="sc-req" id="scReq2">нужно 12.4</div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 Primary Input Fields -->
+<main class="inputs-container">
+  <!-- 1. Track Miles -->
+  <div class="field-card" id="card_D">
+    <div class="field-head">
+      <span class="field-label">Track Miles (до порога)</span>
+      <span class="field-unit">NM</span>
+    </div>
+    <div class="field-display" onclick="openNumpad('D')">
+      <div class="field-number" id="val_D">22.0</div>
+    </div>
+    <div class="field-steppers">
+      <button class="btn-step" onclick="stepVal('D', -5)">−5</button>
+      <button class="btn-step" onclick="stepVal('D', -1)">−1</button>
+      <button class="btn-step" onclick="stepVal('D', +1)">+1</button>
+      <button class="btn-step" onclick="stepVal('D', +5)">+5</button>
+    </div>
+  </div>
+
+  <!-- 2. Altitude -->
+  <div class="field-card" id="card_H">
+    <div class="field-head">
+      <span class="field-label">Высота (текущая)</span>
+      <span class="field-unit">ft / QNH</span>
+    </div>
+    <div class="field-display" onclick="openNumpad('H')">
+      <div class="field-number" id="val_H">5 000</div>
+    </div>
+    <div class="field-steppers">
+      <button class="btn-step" onclick="stepVal('H', -1000)">−1k</button>
+      <button class="btn-step" onclick="stepVal('H', -500)">−500</button>
+      <button class="btn-step" onclick="stepVal('H', +500)">+500</button>
+      <button class="btn-step" onclick="stepVal('H', +1000)">+1k</button>
+    </div>
+  </div>
+
+  <!-- 3. IAS -->
+  <div class="field-card" id="card_V">
+    <div class="field-head">
+      <span class="field-label">Приборная скорость IAS</span>
+      <span class="field-unit">kt</span>
+    </div>
+    <div class="field-display" onclick="openNumpad('V')">
+      <div class="field-number" id="val_V">220</div>
+    </div>
+    <div class="field-steppers">
+      <button class="btn-step" onclick="stepVal('V', -10)">−10</button>
+      <button class="btn-step" onclick="stepVal('V', -5)">−5</button>
+      <button class="btn-step" onclick="stepVal('V', +5)">+5</button>
+      <button class="btn-step" onclick="stepVal('V', +10)">+10</button>
+    </div>
+  </div>
+
+  <!-- 4. Wind Component -->
+  <div class="field-card" id="card_W">
+    <div class="field-head">
+      <span class="field-label">Ветер (встр. + / попутн. −)</span>
+      <span class="field-unit">kt</span>
+    </div>
+    <div class="field-display" onclick="openNumpad('W')">
+      <div class="field-number" id="val_W">+0</div>
+    </div>
+    <div class="field-steppers">
+      <button class="btn-step" onclick="stepVal('W', -10)">−10</button>
+      <button class="btn-step" onclick="stepVal('W', -5)">−5</button>
+      <button class="btn-step sign-toggle" onclick="toggleWindSign()">±</button>
+      <button class="btn-step" onclick="stepVal('W', +5)">+5</button>
+    </div>
+  </div>
+</main>
+
+<!-- Footer / Settings Button -->
+<footer class="footer-bar">
+  <button class="btn-settings-open" onclick="openSettings()">
+    ⚙️ Настройки (ВПП, самолет, погода)
+  </button>
+</footer>
+
+<!-- Settings Bottom Sheet -->
+<div class="modal-overlay" id="settingsModal" onclick="closeModalOnOverlay(event, 'settingsModal')">
+  <div class="bottom-sheet" onclick="event.stopPropagation()">
+    <div class="sheet-header">
+      <div class="sheet-title">Параметры захода и самолета</div>
+      <button class="btn-close" onclick="closeSettings()">Готово ✓</button>
+    </div>
+
+    <!-- Runway -->
+    <div class="setting-section">
+      <div class="section-title">ВПП / Заход</div>
+      <div class="settings-grid">
+        <div class="setting-item">
+          <label>Обозначение ВПП</label>
+          <input type="text" id="cfg_rwy_name" value="UUEE 24R">
+        </div>
+        <div class="setting-item">
+          <label>Превышение порога (ft)</label>
+          <input type="number" id="cfg_rwy_elev" value="623">
+        </div>
+        <div class="setting-item">
+          <label>Угол глиссады (°)</label>
+          <input type="number" step="0.1" id="cfg_rwy_ga" value="3.0">
+        </div>
+        <div class="setting-item">
+          <label>TCH / RDH (ft)</label>
+          <input type="number" id="cfg_rwy_tch" value="50">
+        </div>
+      </div>
+    </div>
+
+    <!-- Aircraft -->
+    <div class="setting-section">
+      <div class="section-title">Самолёт</div>
+      <div class="settings-grid">
+        <div class="setting-item">
+          <label>Модификация</label>
+          <select id="cfg_ac_type">
+            <option value="320c">A320 ceo</option>
+            <option value="320n">A320 neo</option>
+            <option value="321c">A321 ceo</option>
+            <option value="321n">A321 neo</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label>Посадочная масса (т)</label>
+          <input type="number" step="0.5" id="cfg_ac_gw" value="64">
+        </div>
+        <div class="setting-item">
+          <label>VAPP (kt)</label>
+          <input type="number" id="cfg_ac_vapp" value="136">
+        </div>
+        <div class="setting-item">
+          <label>S speed (CONF 1, kt)</label>
+          <input type="number" id="cfg_ac_vs" value="186">
+        </div>
+      </div>
+    </div>
+
+    <!-- Stabilization & Environment -->
+    <div class="setting-section">
+      <div class="section-title">Стабилизация и внешняя среда</div>
+      <div class="settings-grid">
+        <div class="setting-item">
+          <label>Высота стабилизации</label>
+          <select id="cfg_hs">
+            <option value="1000">1000 ft AAL (IMC)</option>
+            <option value="500">500 ft AAL (VMC)</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label>Техника захода</label>
+          <select id="cfg_tech">
+            <option value="dec">Decelerated (стандарт)</option>
+            <option value="early">Early Stabilized</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label>OAT у земли (°C)</label>
+          <input type="number" id="cfg_oat" value="15">
+        </div>
+        <div class="setting-item">
+          <label>Холодная коррекция</label>
+          <select id="cfg_cold">
+            <option value="1">Да (по FCTM)</option>
+            <option value="0">Выкл</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<main>
-<!-- ======================= ЗАХОД ======================= -->
-<section class="view on" id="v-app">
- <div class="main">
-  <div class="left">
-   <div class="card">
-    <div class="seg" id="modeSeg"><button data-m="thr">До порога</button><button data-m="pt">До точки</button><button data-m="dw">Даунвинд</button><button data-m="base">База</button></div>
-    <div class="fields" id="fields"></div>
-    <div class="cfg" id="cfgSeg"><button data-c="0">CLEAN</button><button data-c="1">1</button><button data-c="2">2</button><button data-c="2g">2+G</button><button data-c="3">3+G</button><button data-c="4">FULL</button></div>
-    <div class="wsrc" id="wsrc"><button data-w="man">Ветер: вручную</button><button data-w="ofp">Ветер: OFP по высотам</button></div>
-    <div class="keypad" id="keypad"></div>
-   </div>
-  </div>
-  <div class="right">
-   <div class="status" id="status"><div class="big">—</div><div class="act"></div><div class="sub"></div><div class="meter" id="meter"></div></div>
-   <div class="card"><div class="strip" id="strip"></div></div>
-   <div class="card"><div class="h" id="planH">План</div><div class="plan" id="plan"></div></div>
-   <div class="card"><svg id="chart" viewBox="0 0 900 300"></svg></div>
-   <div class="adv" id="adv"></div>
-  </div>
- </div>
-</section>
-
-<!-- ======================= ВЕТЕР OFP ======================= -->
-<section class="view" id="v-wind">
- <div class="grid2">
-  <div class="card">
-    <div class="h">Ветер по высотам из OFP (истинное направление)</div>
-    <div class="scroll"><table class="t" id="windTbl"></table></div>
-    <div class="btnrow">
-      <button id="wAdd">+ строка</button>
-      <button id="wStd">Стандартные уровни</button>
-      <button id="wClr">Очистить</button>
+<!-- Numpad Modal -->
+<div class="modal-overlay" id="numpadModal" onclick="closeModalOnOverlay(event, 'numpadModal')">
+  <div class="numpad-sheet" onclick="event.stopPropagation()">
+    <div class="numpad-header">
+      <span class="numpad-title" id="numpadTitle">ВВОД ДИСТАНЦИИ</span>
+      <button class="btn-close" onclick="closeNumpad()">✕</button>
     </div>
-    <p class="sm mu">Вводите как в OFP: эшелон (FL), направление (°, истинное, «откуда дует»), скорость (kt). Между уровнями ветер интерполируется по составляющим; ниже нижнего уровня — к приземному ветру.</p>
-  </div>
-  <div class="card">
-    <div class="h">Приземный ветер (ATIS, магнитный)</div>
-    <div class="row"><label>Направление</label><input id="sw_d" type="number" inputmode="decimal"><span class="u">°</span></div>
-    <div class="row"><label>Скорость</label><input id="sw_s" type="number" inputmode="decimal"><span class="u">kt</span></div>
-    <div class="h" style="margin-top:12px">Проверка: ветер на высоте</div>
-    <div class="scroll"><table class="t" id="windChk"></table></div>
-    <p class="sm mu" id="windNote"></p>
-  </div>
- </div>
-</section>
+    <div class="numpad-screen" id="numpadScreen">0</div>
+    <div class="numpad-keys">
+      <button class="num-btn" onclick="numKey('7')">7</button>
+      <button class="num-btn" onclick="numKey('8')">8</button>
+      <button class="num-btn" onclick="numKey('9')">9</button>
+      <button class="num-btn fn" onclick="numKey('BS')">⌫</button>
 
-<!-- ======================= НАСТРОЙКА ======================= -->
-<section class="view" id="v-set">
- <div class="grid2">
-  <div class="card">
-    <div class="h">Аэродромы / ВПП</div>
-    <div id="aptList"></div>
-    <button id="aptNew" style="width:100%;margin-top:6px">+ Новая ВПП</button>
-  </div>
-  <div class="card">
-    <div class="h">Выбранная ВПП</div>
-    <div class="row"><label>Название (ICAO RWY)</label><input id="a_name" style="width:160px;text-align:left"></div>
-    <div class="row"><label>Превышение порога</label><input id="a_elev" type="number" inputmode="decimal"><span class="u">ft</span></div>
-    <div class="row"><label>Посадочный курс (магн.)</label><input id="a_crs" type="number" inputmode="decimal"><span class="u">°</span></div>
-    <div class="row"><label>Магн. склонение (E +, W −)</label><input id="a_var" type="number" inputmode="decimal"><span class="u">°</span></div>
-    <div class="row"><label>Угол глиссады / финала</label><input id="a_ga" type="number" inputmode="decimal" step="0.1"><span class="u">°</span></div>
-    <div class="row"><label>TCH / RDH</label><input id="a_tch" type="number" inputmode="decimal"><span class="u">ft</span></div>
-    <div class="h" style="margin-top:10px">Точки схемы (режим «До точки»)</div>
-    <div id="ptList"></div>
-    <button id="ptNew">+ точка</button>
-    <p class="sm mu">Имя · удаление точки от порога по пути (NM) · высота по схеме (ft).</p>
-  </div>
-  <div class="card">
-    <div class="h">Самолёт</div>
-    <div class="row"><label>Тип</label><select id="type"><option value="320c">A320 ceo</option><option value="320n">A320 neo</option><option value="321c">A321 ceo</option><option value="321n">A321 neo</option></select></div>
-    <div class="row"><label>Посадочная масса</label><input id="gw" type="number" inputmode="decimal" step="0.5"><span class="u">t</span></div>
-    <div class="row"><label>VAPP</label><input id="vapp" type="number" inputmode="decimal"><span class="u">kt</span></div>
-    <div class="row"><label>F speed</label><input id="vf" type="number" inputmode="decimal"><span class="u">kt</span></div>
-    <div class="row"><label>S speed</label><input id="vs" type="number" inputmode="decimal"><span class="u">kt</span></div>
-    <div class="row"><label>Green Dot (0 = формула)</label><input id="vgd" type="number" inputmode="decimal"><span class="u">kt</span></div>
-    <p class="sm mu" id="acInfo"></p>
-  </div>
-  <div class="card">
-    <div class="h">Заход и условия</div>
-    <div class="row"><label>Высота стабилизации</label><select id="hs"><option value="1000">1000 ft (IMC)</option><option value="500">500 ft (VMC)</option></select></div>
-    <div class="row"><label>Техника</label><select id="tech"><option value="dec">Decelerated</option><option value="early">Early stabilized</option></select></div>
-    <div class="row"><label>Скорость на перехвате</label><select id="vint"><option value="S">S (CONF 1)</option><option value="F">F (CONF 2)</option><option value="APP">VAPP</option></select></div>
-    <div class="row"><label>Схема (для даунвинда/базы)</label><select id="side"><option value="L">Левая</option><option value="R">Правая</option></select></div>
-    <div class="row"><label>Буфер к рубежу</label><input id="buf" type="number" inputmode="decimal" step="0.5"><span class="u">NM</span></div>
-    <div class="row"><label>OAT на аэродроме</label><input id="oat" type="number" inputmode="decimal"><span class="u">°C</span></div>
-    <div class="row"><label>Учитывать холод</label><select id="cold"><option value="1">Да</option><option value="0">Нет</option></select></div>
-    <p class="sm mu" id="coldInfo"></p>
-  </div>
- </div>
-</section>
+      <button class="num-btn" onclick="numKey('4')">4</button>
+      <button class="num-btn" onclick="numKey('5')">5</button>
+      <button class="num-btn" onclick="numKey('6')">6</button>
+      <button class="num-btn fn" onclick="numKey('C')">C</button>
 
-<!-- ======================= TOD ======================= -->
-<section class="view" id="v-tod">
- <div class="grid2">
-  <div class="card">
-    <div class="h">Снижение с эшелона</div>
-    <div class="row"><label>Текущая высота</label><input id="t_h" type="number" inputmode="decimal" step="1000"><span class="u">ft</span></div>
-    <div class="row"><label>Целевая высота</label><input id="t_th" type="number" inputmode="decimal" step="500"><span class="u">ft</span></div>
-    <div class="row"><label>Скорость снижения IAS</label><input id="t_v" type="number" inputmode="decimal"><span class="u">kt</span></div>
-    <div class="row"><label>Скорость на целевой высоте</label><input id="t_vt" type="number" inputmode="decimal"><span class="u">kt</span></div>
-    <div class="row"><label>Ветер</label><select id="t_ws"><option value="ofp">OFP по высотам</option><option value="man">вручную</option></select></div>
-    <div class="row"><label>Путевой угол на снижении (магн.)</label><input id="t_trk" type="number" inputmode="decimal"><span class="u">°</span></div>
-    <div class="row"><label>Ветер вручную (встр. +)</label><input id="t_w" type="number" inputmode="decimal"><span class="u">kt</span></div>
-    <div class="row"><label>Расстояние до цели (0 — нет)</label><input id="t_d" type="number" inputmode="decimal"><span class="u">NM</span></div>
-  </div>
-  <div class="card"><div class="h">Результат</div><div class="scroll"><table class="t" id="todRes"></table></div><div class="adv" id="todAdv" style="margin-top:8px"></div></div>
- </div>
-</section>
+      <button class="num-btn" onclick="numKey('1')">1</button>
+      <button class="num-btn" onclick="numKey('2')">2</button>
+      <button class="num-btn" onclick="numKey('3')">3</button>
+      <button class="num-btn fn" onclick="numKey('PM')">±</button>
 
-<!-- ======================= ТАБЛИЦЫ ======================= -->
-<section class="view" id="v-tbl">
- <div class="grid2">
-  <div class="card"><div class="h">Высота на глиссаде (выбранная ВПП)</div><div class="scroll"><table class="t" id="tGS"></table></div></div>
-  <div class="card"><div class="h">V/S (ft/min) для угла по путевой</div><div class="scroll"><table class="t" id="tVS"></table></div><p class="sm mu">V/S = GS × 101,3 × tg θ; для 3° ≈ GS × 5,3.</p></div>
- </div>
-</section>
-
-<!-- ======================= КАЛИБРОВКА ======================= -->
-<section class="view" id="v-cal">
- <div class="grid2">
-  <div class="card">
-    <div class="h">Угол снижения на малом газе, °</div>
-    <div class="row"><label>CLEAN (FCTM ≈ 2,5°)</label><input id="g0" type="number" inputmode="decimal" step="0.1"></div>
-    <div class="row"><label>CONF 1</label><input id="g1" type="number" inputmode="decimal" step="0.1"></div>
-    <div class="row"><label>CONF 2</label><input id="g2" type="number" inputmode="decimal" step="0.1"></div>
-    <div class="row"><label>CONF 2 + L/G</label><input id="g2g" type="number" inputmode="decimal" step="0.1"></div>
-    <div class="row"><label>CONF 3 + L/G</label><input id="g3" type="number" inputmode="decimal" step="0.1"></div>
-    <div class="row"><label>FULL + L/G</label><input id="g4" type="number" inputmode="decimal" step="0.1"></div>
-    <div class="row"><label>Прибавка от интерцепторов</label><input id="gsb" type="number" inputmode="decimal" step="0.1"></div>
+      <button class="num-btn" onclick="numKey('0')">0</button>
+      <button class="num-btn" onclick="numKey('.')">.</button>
+      <button class="num-btn go" onclick="numKey('OK')">OK ▸</button>
+    </div>
   </div>
-  <div class="card">
-    <div class="h">Торможение, kt/NM</div>
-    <div class="row"><label>В горизонте (FCTM ≈ 10)</label><input id="r1" type="number" inputmode="decimal"></div>
-    <div class="row"><label>С интерцепторами (FCTM ≈ 20)</label><input id="r2" type="number" inputmode="decimal"></div>
-    <div class="row"><label>Шасси + механизация + интерц.</label><input id="r3" type="number" inputmode="decimal"></div>
-    <div class="row"><label>На глиссаде с механизацией</label><input id="rgs" type="number" inputmode="decimal"></div>
-    <div class="row"><label>«Успеваем» при запасе от</label><input id="okm" type="number" inputmode="decimal" step="0.5"><span class="u">NM</span></div>
-    <button id="calReset">Сбросить калибровку</button>
-    <p class="sm mu">Из FCTM: 2,5° (managed descent), 10/20 kt/NM. Остальное — осторожные оценки, калибруйте по своим полётам.</p>
-  </div>
- </div>
-</section>
-
-<!-- ======================= СПРАВКА ======================= -->
-<section class="view help" id="v-help">
- <div class="card">
-  <div class="warnbox"><b>Важно.</b> Вспомогательный калькулятор для ситуационной осведомлённости, не одобренное приложение EFB. Основные средства — ND (energy circle), VDEV, PROG BRG/DIST, сверка высота/удаление. Личные устройства — только по политике EFB (РПП (А) 8.17).</div>
-  <h3>Установка на iPad (работает без интернета)</h3>
-  <ol>
-   <li>Откройте ссылку на приложение в <b>Safari</b> (с интернетом, один раз).</li>
-   <li>Кнопка «Поделиться» → <b>«На экран „Домой“»</b>.</li>
-   <li>Запускайте с иконки «Профиль A320». После первого открытия приложение сохраняется в iPad и работает офлайн; ваши данные хранятся на устройстве.</li>
-  </ol>
-  <p class="sm mu">Файл .html, открытый из приложения «Файлы», показывается в режиме просмотра без JavaScript — кнопки там не работают. Нужен Safari.</p>
-  <h3>Как пользоваться на заходе</h3>
-  <ol>
-   <li>Перед полётом: «Настройка» — ВПП (превышение, курс, склонение, угол, TCH, точки), самолёт и скорости с MCDU; «Ветер OFP» — ветер по эшелонам из OFP и ATIS.</li>
-   <li>На заходе: выберите режим расстояния, коснитесь поля → цифры → <b>OK ▸</b>. Кнопки ± — быстрые поправки.</li>
-   <li>Ветер «OFP по высотам» — встречная составляющая считается автоматически по высоте и направлению каждого участка пути (даунвинд, база, финал).</li>
-   <li>Смотрите статус и «План» — последние рубежи (NM до порога), выполнить не позже.</li>
-  </ol>
-  <h3>Режимы расстояния</h3>
-  <ul>
-   <li><b>До порога</b> — track miles по ожидаемому пути. Ветер — по посадочному курсу.</li>
-   <li><b>До точки</b> — удаление до точки схемы + её удаление от порога.</li>
-   <li><b>Даунвинд</b> — смещение от оси, позиция от траверза порога (+ дальше от торца), выход на финал. Путь = (финал − позиция) + смещение + финал.</li>
-   <li><b>База</b> — до оси по базе + выход на финал.</li>
-  </ul>
-  <h3>Модель</h3>
-  <p>Нужно миль = ворота стабилизации + торможение на глиссаде + снижение до высоты перехвата + торможение до скорости перехвата. Градиенты пересчитываются на путевую скорость по ветру. Холод: высотомер завышает ≈ 4×ΔISA×H/1000 (FCTM). Способы: (1) малый газ в текущей конфигурации, (2) + интерцепторы, (3) шасси + механизация + интерцепторы.</p>
-  <h3>Правила (FCTM/FCOM/РПП)</h3>
-  <ul>
-   <li>Следующая конфигурация — на маневренной скорости текущей + 10 kt, ниже VFE: FLAPS 1 ≈ GD+10, 2 ≈ S+10, 3 ≈ F+10, FULL — ниже VFE FULL.</li>
-   <li>Шасси — обычно с FLAPS 2; при нехватке торможения раньше, ниже 220 kt и до FLAPS 2.</li>
-   <li>Интерцепторы: растёт VLS; убираются в FULL (A320) / CONF 3 (A321).</li>
-   <li>Стабилизация 1000 ft IMC / 500 ft VMC; на 500 ft VAPP −5…+20 kt (РПП (B) 2.2.7).</li>
-   <li>Глиссада сверху: на LOC, L/G + ≥ CONF 2, G/S armed, FCU ALT выше, V/S −1500.</li>
-  </ul>
-  <p class="sm mu">Версия 3.0. Источники: FCOM AFL A320/A321, FCTM, РПП (А), РПП (B).</p>
- </div>
-</section>
-</main>
+</div>
 
 <script>
 "use strict";
-const FTNM=6076.12, rad=d=>d*Math.PI/180, deg=r=>r*180/Math.PI;
-const $=id=>document.getElementById(id);
-const r0=x=>Math.round(x), r1=x=>(Math.round(x*10)/10).toFixed(1);
-const fmt=x=>{ const v=r0(x); return (v<0?"−":"")+Math.abs(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g," "); };
-const sgn=x=>(x>=0?"+":"−")+r1(Math.abs(x));
-const norm=a=>((a%360)+360)%360;
 
-/* ---------------- состояние ---------------- */
-const DEF={
-  mode:"thr", cfg:"0", sel:"D", wsrc:"man",
-  D:25, PD:8, DWoff:3.5, DWpos:2, FIN:10, BD:5, H:6000, V:250, W:0, pt:0,
-  apts:[{name:"ПРИМЕР 00", elev:600, crs:0, var:0, ga:3.0, tch:50, pts:[{n:"FAF",d:6.0,a:2500},{n:"IF",d:10.0,a:3800}]}], ai:0,
-  wind:[{fl:390,d:270,s:80},{fl:340,d:270,s:70},{fl:300,d:265,s:60},{fl:240,d:260,s:45},{fl:180,d:255,s:35},{fl:100,d:250,s:25},{fl:50,d:240,s:18}], sw_d:240, sw_s:10,
-  type:"320c", gw:62, vapp:135, vf:150, vs:185, vgd:0,
-  hs:"1000", tech:"dec", vint:"S", side:"L", buf:0, oat:10, cold:"1",
-  t_h:35000, t_th:3000, t_v:280, t_vt:220, t_ws:"ofp", t_trk:0, t_w:0, t_d:0,
-  g0:2.5, g1:2.7, g2:3.0, g2g:3.6, g3:3.9, g4:4.2, gsb:1.0, r1:10, r2:20, r3:20, rgs:10, okm:2,
-  theme:"dark", view:"app"
+const FT_NM = 6076.12;
+const rad = d => d * Math.PI / 180;
+const deg = r => r * 180 / Math.PI;
+
+const DEFAULT_STATE = {
+  // 4 Primary Inputs
+  D: 22.0,      // Track Miles (NM)
+  H: 5000,      // Altitude (ft)
+  V: 220,       // IAS (kt)
+  W: 0,         // Wind component (kt, +headwind, -tailwind)
+
+  // Runway & Approach
+  rwy_name: "UUEE 24R",
+  rwy_elev: 623,
+  rwy_ga: 3.0,
+  rwy_tch: 50,
+
+  // Aircraft
+  ac_type: "320c",
+  ac_gw: 64.0,
+  ac_vapp: 136,
+  ac_vs: 186,
+
+  // Stabilization & Env
+  hs: 1000,
+  tech: "dec",
+  oat: 15,
+  cold: "1",
+
+  // Aerodynamic constants (FCTM A320)
+  g_clean: 2.5,
+  g_spdbk: 3.5,
+  g_gear: 4.2,
+  r_clean: 10.0,
+  r_spdbk: 20.0,
+  r_gear: 22.0,
+  r_gs: 10.0
 };
-const CAL=["g0","g1","g2","g2g","g3","g4","gsb","r1","r2","r3","rgs","okm"];
-let S=JSON.parse(JSON.stringify(DEF));
-const KEY="a320descent_v3";
-function load(){ try{ const j=localStorage.getItem(KEY); if(j) Object.assign(S,JSON.parse(j)); }catch(e){} }
-function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
-const N=k=>{ const v=parseFloat(S[k]); return isFinite(v)?v:parseFloat(DEF[k]); };
-const apt=()=>{ const a=S.apts[S.ai]||S.apts[0]; ["elev","crs","var","ga","tch"].forEach(k=>{ if(a[k]===undefined||a[k]==="") a[k]=DEF.apts[0][k]; }); if(!a.pts) a.pts=[]; return a; };
 
-/* ---------------- атмосфера ---------------- */
-function tas(ias,alt,disa){ const h=Math.max(0,alt); const p=Math.pow(1-6.8756e-6*h,5.2559); const T=288.15-0.0019812*h; const sg=p*288.15/(T+disa); return ias/Math.sqrt(Math.max(sg,.2)); }
-const isaDev=(oat,elev)=>oat-(15-1.98*elev/1000);
-function kc(){ if(S.cold!=="1") return 1; return 1-0.004*isaDev(N("oat"),+apt().elev); }
-const is321=()=>S.type.startsWith("321");
-function GD(){ const g=N("vgd"); if(g>0) return g; const w=N("gw"); return is321()?1.5*w+110:2*w+85; }
-function VFE(){ if(S.type==="321n") return {c1:243,c2:215,c3:195,c4:186}; if(S.type==="321c") return {c1:230,c2:215,c3:195,c4:190}; return {c1:230,c2:200,c3:185,c4:177}; }
-const CFGI={"0":0,"1":1,"2":2,"2g":3,"3":4,"4":5};
-const CFGN={"0":"CLEAN","1":"CONF 1","2":"CONF 2","2g":"CONF 2+G","3":"CONF 3+G","4":"FULL"};
-const cfgGrad=c=>({"0":N("g0"),"1":N("g1"),"2":N("g2"),"2g":N("g2g"),"3":N("g3"),"4":N("g4")})[c];
-const sbOK=c=>!(c==="4"||(c==="3"&&is321()));
+let S = JSON.parse(JSON.stringify(DEFAULT_STATE));
+const STORAGE_KEY = "a320_vector_profile_v1";
 
-/* ---------------- ветер по высотам ---------------- */
-/* вектор «откуда дует» в магнитных градусах: u = s·sin, v = s·cos */
-function windVec(alt){
-  const a=apt(), vr=+a.var||0;
-  const pts=(S.wind||[]).filter(w=>isFinite(+w.fl)&&isFinite(+w.d)&&isFinite(+w.s)&&w.fl!=="").map(w=>({h:+w.fl*100, d:norm(+w.d - vr), s:+w.s}));
-  pts.push({h:+a.elev, d:norm(N("sw_d")), s:N("sw_s"), sfc:1});
-  pts.sort((x,y)=>x.h-y.h);
-  const uv=p=>({u:p.s*Math.sin(rad(p.d)), v:p.s*Math.cos(rad(p.d))});
-  if(alt<=pts[0].h) return uv(pts[0]);
-  for(let i=0;i<pts.length-1;i++){ const p=pts[i],q=pts[i+1]; if(alt<=q.h){ const t=(alt-p.h)/Math.max(1,q.h-p.h), A=uv(p), B=uv(q); return {u:A.u+(B.u-A.u)*t, v:A.v+(B.v-A.v)*t}; } }
-  return uv(pts[pts.length-1]);
-}
-function windDS(alt){ const w=windVec(alt); return {d:norm(deg(Math.atan2(w.u,w.v))), s:Math.hypot(w.u,w.v)}; }
-const headwind=(alt,crs)=>{ const w=windVec(alt); return w.u*Math.sin(rad(crs))+w.v*Math.cos(rad(crs)); };
-
-/* ---------------- путь по режиму ---------------- */
-function legs(){
-  const a=apt(), fc=+a.crs||0, base=S.side==="L"? fc+90 : fc-90;
-  switch(S.mode){
-    case "pt": { const p=a.pts[S.pt]; return [{len:N("PD")+(p?+p.d:0),crs:fc}]; }
-    case "dw": { const F=N("FIN"); return [{len:Math.max(0,F-N("DWpos")),crs:fc+180},{len:N("DWoff"),crs:base},{len:F,crs:fc}]; }
-    case "base": return [{len:N("BD"),crs:base},{len:N("FIN"),crs:fc}];
-    default: return [{len:N("D"),crs:fc}];
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      Object.assign(S, parsed);
+    }
+  } catch (e) {
+    console.error("Storage load error:", e);
   }
 }
-const trackMiles=()=>legs().reduce((s,l)=>s+l.len,0);
-/* курс на удалении x (NM до порога, по пути) */
-function crsAt(x){ const L=legs(); let rem=L.reduce((s,l)=>s+l.len,0); for(const l of L){ if(x>=rem-l.len-1e-6) return l.crs; rem-=l.len; } return L[L.length-1].crs; }
 
-/* ---------------- расчёт ---------------- */
-function compute(){
-  const a=apt(), E=+a.elev, th=+a.ga, TCH=+a.tch, fc=+a.crs||0;
-  const D=trackMiles(), Hb=N("H"), V=N("V"), HS=+S.hs, k=kc(), disa=isaDev(N("oat"),E);
-  const gsft=FTNM*Math.tan(rad(th)), VAPP=N("vapp");
-  const vi = S.tech==="early" ? VAPP : ({S:N("vs"),F:N("vf"),APP:VAPP})[S.vint];
-  const VI=Math.max(VAPP,Math.min(vi,V));
-  const hT=(Hb-E)/k;
-  const dGate=(HS-TCH)/gsft;
-  const ofp=S.wsrc==="ofp";
-  const altAt=x=>E+Math.min(hT,TCH+x*gsft)*k;           // ожидаемая баро-высота на удалении x
-  // ветер: на глиссаде (финал) и до перехвата (по участкам пути)
-  const Wfin = ofp ? avg(0.3,8,x=>headwind(E+(TCH+x*gsft)*k,fc)) : N("W");
-  const tasA=tas(VAPP,E+500,disa), tasI=tas(VI,E+1500,disa);
-  const fGS=((tasA+tasI)/2)/Math.max(40,(tasA+tasI)/2-Wfin);
-  const dDecGS = S.tech==="early"?0:Math.max(0,VI-VAPP)/N("rgs")/fGS;
-  const dIntS=dGate+dDecGS, dInt=dIntS+N("buf");
-  const hInt=TCH+dInt*gsft;
-  const dH=Math.max(0,hT-hInt), dV=Math.max(0,V-VI);
-  const Wpre = ofp ? (D>dInt? avg(dInt,D,x=>headwind(altAt(x),crsAt(x))) : Wfin) : N("W");
-  const Wnow = ofp ? headwind(Hb,crsAt(D)) : N("W");
-  const tasNow=tas(V,Hb,disa), tasMid=(tasNow+tasI)/2, gsMid=Math.max(60,tasMid-Wpre), f=tasMid/gsMid;
-  const gc=cfgGrad(S.cfg), sb=sbOK(S.cfg);
-  const G=[gc, sb?gc+N("gsb"):gc, Math.max(N("g2g")+N("gsb"), sb?gc+N("gsb"):gc)];
-  const R=[N("r1"), sb?N("r2"):N("r1"), N("r3")];
-  const st=[0,1,2].map(i=>{ const gG=FTNM*Math.tan(rad(G[i]))*f, rG=R[i]*f; const dDesc=dH/gG, dDec=dV/rG; const need=dInt+dDesc+dDec; return {i,g:G[i],r:R[i],gG,rG,dDesc,dDec,need,m:D-need}; });
-  const dev=hT-(TCH+D*gsft), gsNow=Math.max(60,tasNow-Wnow);
-  const avail=D-dInt-dV/st[1].rG;
-  const reqVS= avail>0.05 ? dH/avail*gsNow/60 : Infinity;
-  return {a,E,th,TCH,fc,D,Hb,V,HS,k,disa,gsft,VAPP,VI,hT,dGate,dDecGS,dIntS,dInt,hInt,dH,dV,tasNow,gsNow,f,st,dev,reqVS,sb,Wfin,Wpre,Wnow,ofp};
-}
-function avg(x1,x2,fn){ const n=12; let s=0; for(let i=0;i<=n;i++) s+=fn(x1+(x2-x1)*i/n); return s/(n+1); }
-
-/* ---------------- план конфигурации ---------------- */
-function plan(c,s){
-  const dDecS=c.dInt+s.dDec, dDesS=dDecS+s.dDesc;
-  const vAt=d=>{ if(d<=c.dGate) return c.VAPP; if(d<=c.dIntS) return c.dDecGS>0? c.VAPP+(d-c.dGate)/c.dDecGS*(c.VI-c.VAPP):c.VI; if(d<=c.dInt) return c.VI; if(d<=dDecS) return s.dDec>0? c.VI+(d-c.dInt)/s.dDec*(c.V-c.VI):c.V; return c.V; };
-  const hAt=d=>{ if(d<=c.dInt) return c.TCH+d*c.gsft; if(d<=dDecS) return c.hInt; return c.hInt+(d-dDecS)*s.gG; };
-  const baro=h=>c.E+h*c.k;
-  const pointFor=T=>{ for(let d=Math.max(c.D,dDesS); d>=0; d-=0.05){ if(vAt(d)<=T+0.01) return d; } return 0; };
-  const vfe=VFE(), ci=CFGI[S.cfg], gearEarly=s.i===2, it=[];
-  const add=(idx,tag,txt,T)=>{ if(ci>=idx) return; const d=pointFor(T); it.push({d,tag,txt,alt:baro(hAt(d))}); };
-  if(c.dH>0) it.push({d:dDesS,tag:"DES",txt:s.i===0?"Малый газ, снижение":"Снижение + интерцепторы",alt:baro(hAt(dDesS))});
-  if(c.dV>0) it.push({d:dDecS,tag:"SPD",txt:`Торможение до ${r0(c.VI)} kt`,alt:baro(hAt(dDecS))});
-  add(1,"F1","FLAPS 1",Math.min(GD()+10,vfe.c1-5));
-  if(gearEarly&&ci<3){ const d=pointFor(220); it.push({d,tag:"L/G",txt:"GEAR DOWN (≤ 220 kt, до FLAPS 2)",alt:baro(hAt(d))}); }
-  add(2,"F2","FLAPS 2",Math.min(N("vs")+10,vfe.c2-5));
-  if(!gearEarly) add(3,"L/G","GEAR DOWN",Math.min(N("vs")+10,vfe.c2-5)-0.5);
-  add(4,"F3","FLAPS 3",Math.min(N("vf")+10,vfe.c3-5));
-  add(5,"FULL","FLAPS FULL",Math.max(c.VAPP+3,Math.min(N("vf"),vfe.c4-5)));
-  it.push({d:c.dInt,tag:"G/S",txt:"На глиссаде"+(S.tech==="early"?", посадочная конф., VAPP":`, ${r0(c.VI)} kt`),alt:baro(c.hInt),fix:1});
-  it.push({d:c.dGate,tag:"STAB",txt:`Стабилизирован: FULL, VAPP ${r0(c.VAPP)}`,alt:baro(c.HS),fix:1});
-  it.sort((x,y)=>y.d-x.d);
-  return {it,hAt};
-}
-
-/* ---------------- главный экран ---------------- */
-function render(){
-  const c=compute(), okm=N("okm"), [s1,s2,s3]=c.st;
-  let cls,big,act,sub,use;
-  if(s1.m>=okm){ cls="s-ok"; big="УСПЕВАЕМ"; act=`Малый газ (${CFGN[S.cfg]}). Запас ${sgn(s1.m)} NM`; sub=`Можно принять спрямление до ${r1(Math.max(0,s1.m-okm))} NM`; use=s1; }
-  else if(s1.m>=0){ cls="s-wa"; big="НА ГРАНИ"; act=`Снижаться/тормозить СЕЙЧАС. Запас ${sgn(s1.m)} NM`; sub=`С интерцепторами запас ${sgn(s2.m)} NM`; use=s1; }
-  else if(s2.m>=0){ cls="s-wa"; big="SPEED BRAKES"; act=`Интерцепторы + малый газ. Запас ${sgn(s2.m)} NM`; sub=`Без них не хватает ${r1(-s1.m)} NM`; use=s2; }
-  else if(s3.m>=0){ cls="s-wa"; big="GEAR + SPD BRK"; act=`≤ 220 kt → шасси, механизация, интерцепторы. Запас ${sgn(s3.m)} NM`; sub=`Или запросить +${r1(-s2.m)} NM`; use=s3; }
-  else { cls="s-ba"; big="НЕ УСПЕВАЕМ"; act=`Запросить +${r1(-s1.m)} NM (минимум +${r1(-s3.m)})`; sub="Вектор / орбита / больший путь — или прекратить заход"; use=s3; }
-  const st=$("status"); st.className="status "+cls;
-  st.querySelector(".big").textContent=big; st.querySelector(".act").textContent=act; st.querySelector(".sub").textContent=sub;
-  const lab=["Малый газ","+ Интерцепт.","Макс. сопр."];
-  $("meter").innerHTML=c.st.map((s,i)=>`<div class="${s.m>=0?'y':'n'}">${lab[i]}<b style="color:${s.m>=0?'var(--ok)':'var(--ba)'}">${sgn(s.m)}</b>нужно ${r1(s.need)}</div>`).join("");
-  const devTxt=Math.abs(c.dev)<60?"на G/S":(c.dev>0?"↑ "+fmt(c.dev):"↓ "+fmt(-c.dev));
-  const wtxt=w=>(w>=0?"встр. ":"попутн. ")+r0(Math.abs(w));
-  $("strip").innerHTML=[
-    ["Track miles",r1(c.D)],["От G/S, ft",devTxt],["Нужная V/S",isFinite(c.reqVS)?"−"+fmt(c.reqVS):"—"],
-    ["V/S для "+r1(c.th)+"°","−"+fmt(c.gsNow*101.27*Math.tan(rad(c.th)))],["Путевая, kt",r0(c.gsNow)],["Высота G/S тут",fmt(c.E+(c.TCH+c.D*c.gsft)*c.k)],
-    ["Ветер до перехв.",wtxt(c.Wpre)],["Ветер на финале",wtxt(c.Wfin)]
-  ].map(x=>`<div><span>${x[0]}</span><b>${x[1]}</b></div>`).join("");
-  const P=plan(c,use);
-  $("planH").textContent=`План: «${lab[use.i]}» — не позже, NM до порога`;
-  $("plan").innerHTML=P.it.map(x=>{ const now=!x.fix && x.d>=c.D-0.05; return `<div class="r ${now?'now':''}"><div class="d">${now?'СЕЙЧАС':r1(x.d)}</div><div class="t"><span class="tag">${x.tag}</span>${x.txt}</div><div class="a">${fmt(x.alt)} ft</div></div>`; }).join("");
-  const A=[];
-  if(c.V>250&&c.Hb<10000) A.push(["b","Скорость > 250 kt ниже FL100 — проверить ограничение."]);
-  if(!c.sb) A.push(["","Интерцепторы недоступны в этой конфигурации ("+(is321()?"A321: CONF 3/FULL":"A320: FULL")+")."]);
-  if(c.dev>150){
-    const gsF=Math.max(60,Math.min(c.gsNow,tas(N("vf"),c.Hb,c.disa)-c.Wnow));
-    const t=[1000,1500,2000].map(vs=>{ const cl=vs*60/gsF-c.gsft; if(cl<=0) return `${vs}: не догонит`; const d=c.D-c.dev/cl; return `${vs}: захват ${r1(d)} NM ${d>=c.dInt?'✓':(d>=c.dGate?'(поздно)':'✗')}`; }).join(" · ");
-    A.push(["","Глиссада СВЕРХУ (LOC, L/G + ≥ CONF 2, G/S armed, FCU ALT выше). V/S → "+t]);
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(S));
+  } catch (e) {
+    console.error("Storage save error:", e);
   }
-  if(c.Wpre<=-5) A.push(["","Попутный ветер ≈ "+r0(-c.Wpre)+" kt — профиль положе, торможение медленнее. Шасси раньше."]);
-  if(S.mode==="thr"&&c.ofp) A.push(["i","Режим «До порога»: ветер OFP взят по посадочному курсу. Для даунвинда/базы используйте соответствующий режим — ветер посчитается по каждому участку."]);
-  if(S.cold==="1"&&c.disa<-10) A.push(["","Холод ΔISA "+r0(c.disa)+"°: высотомер завышает ≈ "+fmt((c.k-1)*c.hT)+" ft. Поправки — РПП (А) 8.21."]);
-  if(c.dev<-300&&c.D<c.dInt+3) A.push(["b","Ниже глиссады у рубежа — не снижаться ниже высот схемы до захвата."]);
-  A.push(["i","Не стабилизирован к "+c.HS+" ft AAL — уход на второй круг."]);
-  $("adv").innerHTML=A.map(a=>`<div class="${a[0]}">${a[1]}</div>`).join("");
-  drawChart(c,use,P);
-  $("aptChip").textContent="🛬 "+apt().name;
-  $("typeChip").textContent=({"320c":"A320ceo","320n":"A320neo","321c":"A321ceo","321n":"A321neo"})[S.type]+" · "+N("vapp");
 }
 
-function drawChart(c,use,P){
-  const W=900,H=300,L=52,R=12,T=14,B=26, cs=getComputedStyle(document.documentElement), col=n=>cs.getPropertyValue(n).trim();
-  const xmax=Math.max(10,Math.ceil((Math.max(c.D,use.need)+2)/5)*5);
-  const hmax=Math.max(3000,Math.ceil((Math.max(c.hT,c.TCH+xmax*c.gsft*.55)+800)/1000)*1000);
-  const X=d=>W-R-(d/xmax)*(W-L-R), Y=h=>H-B-(h/hmax)*(H-T-B);
-  let s="";
-  for(let d=0;d<=xmax;d+=xmax>40?10:5) s+=`<line x1="${X(d)}" y1="${T}" x2="${X(d)}" y2="${H-B}" stroke="${col('--ln')}"/><text x="${X(d)}" y="${H-7}" fill="${col('--mu')}" font-size="14" text-anchor="middle">${d}</text>`;
-  const hs=hmax>12000?2000:1000;
-  for(let h=0;h<=hmax;h+=hs) s+=`<line x1="${L}" y1="${Y(h)}" x2="${W-R}" y2="${Y(h)}" stroke="${col('--ln')}"/><text x="${L-5}" y="${Y(h)+4}" fill="${col('--mu')}" font-size="13" text-anchor="end">${h}</text>`;
-  s+=`<line x1="${X(0)}" y1="${Y(c.TCH)}" x2="${X(xmax)}" y2="${Y(c.TCH+xmax*c.gsft)}" stroke="${col('--gs')}" stroke-width="3"/>`;
-  const cl=[col('--ok'),col('--wa'),col('--ba')];
-  c.st.forEach((st,k)=>{ const x2=c.dInt+st.dDec, x3=Math.min(xmax,x2+(hmax-c.hInt)/st.gG);
-    s+=`<polyline points="${X(c.dInt)},${Y(c.hInt)} ${X(x2)},${Y(c.hInt)} ${X(x3)},${Y(c.hInt+(x3-x2)*st.gG)}" fill="none" stroke="${cl[k]}" stroke-width="${st===use?3.5:1.8}" stroke-dasharray="${st===use?'':'6 5'}"/>`; });
-  P.it.forEach(x=>{ if(x.d>xmax) return; const h=P.hAt(x.d); s+=`<circle cx="${X(x.d)}" cy="${Y(h)}" r="4" fill="${col('--mg')}"/><text x="${X(x.d)}" y="${Y(h)+18}" fill="${col('--mg')}" font-size="12" text-anchor="middle">${x.tag}</text>`; });
-  s+=`<rect x="${X(c.dGate)-4}" y="${Y(c.HS)-9}" width="8" height="18" fill="${col('--ok')}"/>`;
-  if(c.D<=xmax){ const y=Y(Math.min(c.hT,hmax)); s+=`<circle cx="${X(c.D)}" cy="${y}" r="9" fill="${col('--ac')}" stroke="${col('--tx')}" stroke-width="2"/><text x="${Math.min(Math.max(X(c.D),70),W-70)}" y="${y-14}" fill="${col('--tx')}" font-size="15" font-weight="700" text-anchor="middle">${fmt(c.Hb)} / ${r0(c.V)}</text>`; }
-  s+=`<text x="${L+4}" y="${T+12}" fill="${col('--mu')}" font-size="13">ft AAL · NM до порога → 0</text>`;
-  $("chart").innerHTML=s;
+// True Airspeed calculation
+function calcTas(ias, alt, oat, elev) {
+  const h = Math.max(0, alt);
+  const disa = oat - (15 - 1.98 * (elev / 1000));
+  const p = Math.pow(1 - 6.8756e-6 * h, 5.2559);
+  const T = 288.15 - 0.0019812 * h;
+  const sigma = (p * 288.15) / Math.max(150, T + disa);
+  return ias / Math.sqrt(Math.max(0.2, sigma));
 }
 
-/* ---------------- поля и клавиатура ---------------- */
-const FIELD={
-  D:{lb:"Track miles до порога",un:"NM",st:[-1,1],dec:1},
-  PD:{lb:"До точки",un:"NM",st:[-1,1],dec:1},
-  DWoff:{lb:"Смещение даунвинда",un:"NM",st:[-0.5,0.5],dec:1},
-  DWpos:{lb:"От траверза THR (+дальше)",un:"NM",st:[-1,1],dec:1,neg:1},
-  FIN:{lb:"Выход на финал от THR",un:"NM",st:[-1,1],dec:1},
-  BD:{lb:"До оси по базе",un:"NM",st:[-1,1],dec:1},
-  H:{lb:"Высота",un:"ft",st:[-500,500]},
-  V:{lb:"IAS",un:"kt",st:[-10,10]},
-  W:{lb:"Ветер встр.+ / попутн.−",un:"kt",st:[-5,5],neg:1}
-};
-const MODEF={thr:["D"],pt:["PD"],dw:["DWoff","DWpos","FIN"],base:["BD","FIN"]};
-const order=()=>[...MODEF[S.mode],"H","V",...(S.wsrc==="man"?["W"]:[])];
-let typing=null;
-function renderFields(){
-  const fs=order(); if(!fs.includes(S.sel)) S.sel=fs[0];
-  let h="";
-  if(S.mode==="pt"){ const pts=apt().pts; h+=`<div class="fld wide"><div class="lb">Точка схемы</div><div class="seg" style="margin-top:4px">${pts.map((p,i)=>`<button data-pt="${i}" class="${i==S.pt?'on':''}">${p.n} ${p.d}</button>`).join("")||'<span class="sm mu">Добавьте точки в «Настройке»</span>'}</div></div>`; }
-  fs.forEach(k=>{ const f=FIELD[k]; const v=(typing!==null&&S.sel===k)?(typing||"_"):(f.dec?r1(N(k)):fmt(N(k)));
-    h+=`<div class="fld ${S.sel===k?'sel':''}" data-f="${k}"><div class="lb">${f.lb}</div><div class="vl">${v}<span class="un">${f.un}</span></div><div class="st"><button data-s="${k}" data-v="${f.st[0]}">${String(f.st[0]).replace("-","−")}</button><button data-s="${k}" data-v="${f.st[1]}">+${f.st[1]}</button></div></div>`; });
-  if(S.wsrc==="ofp"){ const c=compute(); h+=`<div class="fld ro"><div class="lb">Ветер (OFP, сейчас)</div><div class="vl">${c.Wnow>=0?"+":"−"}${r0(Math.abs(c.Wnow))}<span class="un">kt</span></div><div class="sm mu">${c.Wnow>=0?"встречный":"попутный"}</div></div>`; }
-  if(S.mode!=="thr") h+=`<div class="fld wide ro"><div class="lb">= Track miles до порога</div><div class="vl">${r1(trackMiles())}<span class="un">NM</span></div></div>`;
-  $("fields").innerHTML=h;
-  document.querySelectorAll("#modeSeg button").forEach(b=>b.classList.toggle("on",b.dataset.m===S.mode));
-  document.querySelectorAll("#cfgSeg button").forEach(b=>b.classList.toggle("on",b.dataset.c===S.cfg));
-  document.querySelectorAll("#wsrc button").forEach(b=>b.classList.toggle("on",b.dataset.w===S.wsrc));
-}
-function keypad(){
-  const keys=["7","8","9","⌫","4","5","6","C","1","2","3","±","0",".","OK"];
-  $("keypad").innerHTML=keys.map(k=>`<button class="${'⌫C±'.includes(k)?'fn':''} ${k==='OK'?'go':''}" data-k="${k}">${k==='OK'?'OK ▸':k}</button>`).join("");
-}
-function commit(){ if(typing===null) return; let v=parseFloat(typing); if(isFinite(v)){ if(!FIELD[S.sel].neg) v=Math.abs(v); S[S.sel]=v; } typing=null; }
-function onKey(k){
-  if(k==="OK"){ commit(); const fs=order(); S.sel=fs[(fs.indexOf(S.sel)+1)%fs.length]; }
-  else if(k==="C") typing="";
-  else if(k==="⌫") typing=(typing??"").slice(0,-1);
-  else if(k==="±"){ if(FIELD[S.sel].neg){ if(typing===null) typing=String(N(S.sel)); typing=typing.startsWith("-")?typing.slice(1):"-"+typing; const v=parseFloat(typing); if(isFinite(v)) S[S.sel]=v; } }
-  else { if(typing===null) typing=""; if(k==="."&&typing.includes(".")) return; if(typing.replace("-","").length<6) typing+=k; const v=parseFloat(typing); if(isFinite(v)) S[S.sel]=FIELD[S.sel].neg?v:Math.abs(v); }
-  save(); renderFields(); render();
+// Cold weather altimeter correction factor
+function getColdFactor() {
+  if (S.cold !== "1") return 1.0;
+  const disa = S.oat - (15 - 1.98 * (S.rwy_elev / 1000));
+  return 1.0 - 0.004 * disa;
 }
 
-/* ---------------- ветер OFP ---------------- */
-function renderWind(){
-  $("windTbl").innerHTML=`<tr><th>FL</th><th>Напр., ° ист.</th><th>Скор., kt</th><th></th></tr>`+(S.wind||[]).map((w,i)=>`<tr><td><input data-wi="${i}" data-wk="fl" type="number" inputmode="decimal" value="${w.fl}"></td><td><input data-wi="${i}" data-wk="d" type="number" inputmode="decimal" value="${w.d}"></td><td><input data-wi="${i}" data-wk="s" type="number" inputmode="decimal" value="${w.s}"></td><td><button data-wdel="${i}">✕</button></td></tr>`).join("");
-  renderWindChk();
-}
-function renderWindChk(){
-  const a=apt(), fc=+a.crs||0;
-  const alts=[...new Set([35000,25000,15000,10000,6000,4000,3000,2000,+a.elev+1000].map(Math.round))].sort((x,y)=>y-x);
-  $("windChk").innerHTML=`<tr><th>Высота</th><th>Ветер (магн.)</th><th>На курсе ${r0(fc)}°</th></tr>`+alts.map(h=>{ const w=windDS(h), hw=headwind(h,fc); return `<tr><td>${fmt(h)}</td><td>${String(r0(w.d)).padStart(3,"0")}/${r0(w.s)}</td><td style="color:${hw>=0?'var(--ok)':'var(--wa)'}">${hw>=0?"встр. ":"попутн. "}${r0(Math.abs(hw))}</td></tr>`; }).join("");
-  $("windNote").textContent=`Склонение ВПП ${apt().var||0}° (E+). Направления OFP переводятся в магнитные: магн. = ист. − склонение.`;
-}
+// Main Flight Profile Computation
+function computeProfile() {
+  const elev = Number(S.rwy_elev) || 0;
+  const ga = Number(S.rwy_ga) || 3.0;
+  const tch = Number(S.rwy_tch) || 50;
+  const hs = Number(S.hs) || 1000;
+  const D = Number(S.D) || 0;
+  const H = Number(S.H) || 0;
+  const V = Number(S.V) || 0;
+  const W = Number(S.W) || 0;
 
-function twoTap(btn,fn){ if(btn.dataset.armed){ fn(); return; } const t=btn.textContent; btn.dataset.armed="1"; btn.textContent="Точно?"; btn.style.borderColor="var(--ba)"; setTimeout(()=>{ if(btn.isConnected){ btn.textContent=t; delete btn.dataset.armed; btn.style.borderColor=""; } },3000); }
-/* ---------------- настройки ---------------- */
-const SETF=["type","gw","vapp","vf","vs","vgd","hs","tech","vint","side","buf","oat","cold","sw_d","sw_s","t_h","t_th","t_v","t_vt","t_ws","t_trk","t_w","t_d",...CAL];
-function renderSet(){
-  $("aptList").innerHTML=S.apts.map((a,i)=>`<div class="apt"><b>${a.name}</b><span class="sm mu">${a.elev} ft · ${a.crs??0}° · ${a.ga}°</span><button data-ai="${i}" class="${i==S.ai?'on':''}">${i==S.ai?'выбрана':'выбрать'}</button><button data-del="${i}">✕</button></div>`).join("");
-  const a=apt(); ["name","elev","crs","var","ga","tch"].forEach(k=>{ const el=$("a_"+k); if(document.activeElement!==el) el.value=a[k]; });
-  $("ptList").innerHTML=a.pts.map((p,i)=>`<div class="apt"><input data-pn="${i}" value="${p.n}" style="width:70px"><input data-pd="${i}" type="number" inputmode="decimal" value="${p.d}"><span class="sm mu">NM</span><input data-pa="${i}" type="number" inputmode="decimal" value="${p.a}"><span class="sm mu">ft</span><button data-pdel="${i}">✕</button></div>`).join("");
-  $("acInfo").textContent=`Green Dot ≈ ${r0(GD())} kt (${is321()?'1,5×W+110':'2×W+85'}). VFE: 1 — ${VFE().c1}, 2 — ${VFE().c2}, 3 — ${VFE().c3}, FULL — ${VFE().c4} kt.`;
-  const d=isaDev(N("oat"),+a.elev); $("coldInfo").textContent=`ΔISA ${d>0?'+':''}${r0(d)}°. Поправка на 1000 ft ≈ ${fmt(Math.max(0,-0.004*d*1000))} ft.`;
-}
-function refreshAll(){ renderFields(); render(); renderTod(); renderTbl(); renderWindChk(); }
-function bindSet(){
-  SETF.forEach(id=>{ const el=$(id); if(!el) return; el.value=S[id]; el.addEventListener("input",()=>{ S[id]=el.value; save(); renderSet(); refreshAll(); }); });
-  ["name","elev","crs","var","ga","tch"].forEach(k=>$("a_"+k).addEventListener("input",()=>{ const a=apt(); a[k]= k==="name"? $("a_"+k).value : (parseFloat($("a_"+k).value)||0); save(); renderSet(); refreshAll(); }));
-  $("aptList").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return;
-    if(b.dataset.ai!==undefined){ S.ai=+b.dataset.ai; S.pt=0; }
-    if(b.dataset.del!==undefined){ if(S.apts.length>1) twoTap(b,()=>{ S.apts.splice(+b.dataset.del,1); S.ai=0; save(); renderSet(); refreshAll(); }); return; }
-    save(); renderSet(); refreshAll(); });
-  $("aptNew").onclick=()=>{ S.apts.push({name:"НОВАЯ ВПП",elev:0,crs:0,var:0,ga:3.0,tch:50,pts:[{n:"FAF",d:5.0,a:1600}]}); S.ai=S.apts.length-1; save(); renderSet(); refreshAll(); };
-  $("ptNew").onclick=()=>{ apt().pts.push({n:"PT",d:8,a:2500}); save(); renderSet(); refreshAll(); };
-  $("ptList").addEventListener("input",e=>{ const t=e.target,a=apt(); if(t.dataset.pn!==undefined) a.pts[+t.dataset.pn].n=t.value; if(t.dataset.pd!==undefined) a.pts[+t.dataset.pd].d=parseFloat(t.value)||0; if(t.dataset.pa!==undefined) a.pts[+t.dataset.pa].a=parseFloat(t.value)||0; save(); refreshAll(); });
-  $("ptList").addEventListener("click",e=>{ const b=e.target.closest("button[data-pdel]"); if(!b) return; apt().pts.splice(+b.dataset.pdel,1); S.pt=0; save(); renderSet(); refreshAll(); });
-  $("windTbl").addEventListener("input",e=>{ const t=e.target; if(t.dataset.wi===undefined) return; S.wind[+t.dataset.wi][t.dataset.wk]=t.value===""?"":parseFloat(t.value); save(); refreshAll(); });
-  $("windTbl").addEventListener("click",e=>{ const b=e.target.closest("button[data-wdel]"); if(!b) return; S.wind.splice(+b.dataset.wdel,1); save(); renderWind(); refreshAll(); });
-  $("wAdd").onclick=()=>{ S.wind.push({fl:"",d:"",s:""}); save(); renderWind(); };
-  $("wStd").onclick=()=>{ S.wind=[390,340,300,240,180,100,50].map(fl=>{ const o=(S.wind||[]).find(w=>+w.fl===fl); return o||{fl,d:"",s:""}; }); save(); renderWind(); refreshAll(); };
-  $("wClr").onclick=e=>twoTap(e.currentTarget,()=>{ S.wind=[]; save(); renderWind(); refreshAll(); });
-  $("calReset").onclick=()=>{ CAL.forEach(k=>{ S[k]=DEF[k]; $(k).value=DEF[k]; }); save(); refreshAll(); };
-}
+  const kCold = getColdFactor();
+  const gsFtPerNm = FT_NM * Math.tan(rad(ga));
 
-/* ---------------- TOD и таблицы ---------------- */
-function renderTod(){
-  const H=N("t_h"),HT=N("t_th"),V=N("t_v"),VT=N("t_vt"),D=N("t_d"),g=N("g0"),r=N("r1"),trk=N("t_trk"), ofp=S.t_ws==="ofp";
-  const hw=(h1,h2)=> ofp ? avg(h2,h1,h=>headwind(h,trk)) : N("t_w");
-  const dist=(h1,h2,ias)=>{ if(h1<=h2) return 0; const t=tas(ias,(h1+h2)/2,0), gs=Math.max(80,t-hw(h1,h2)); return (h1-h2)/(FTNM*Math.tan(rad(g))*t/gs); };
-  const dec=(v1,v2,h)=>{ if(v1<=v2) return 0; const t=tas((v1+v2)/2,h,0), gs=Math.max(80,t-hw(h+1,h)); return (v1-v2)/(r*t/gs); };
-  let parts;
-  if(H>10000&&HT<10000&&V>250) parts=[[`Снижение до FL100 на ${V} kt`,dist(H,10000,V)],["Торможение до 250 kt",dec(V,250,10000)],[`Снижение до ${fmt(HT)} на 250 kt`,dist(10000,HT,250)],[`Торможение до ${VT} kt`,dec(250,VT,HT)]];
-  else { const v=H<=10000?Math.min(V,250):V; parts=[[`Снижение на ${v} kt`,dist(H,HT,v)],[`Торможение до ${VT} kt`,dec(v,VT,HT)]]; }
-  const tot=parts.reduce((a,p)=>a+p[1],0), rule=(H-HT)/1000*3+Math.max(0,V-VT)/10, wav=hw(H,HT);
-  $("todRes").innerHTML=parts.map(p=>`<tr><td>${p[0]}</td><td>${r1(p[1])} NM</td></tr>`).join("")+`<tr><td><b>TOD до цели</b></td><td><b>${r1(tot)} NM</b></td></tr><tr><td>Средний ветер</td><td>${wav>=0?"встр. ":"попутн. "}${r0(Math.abs(wav))} kt</td></tr><tr><td>Правило 3×H + торможение</td><td>${r1(rule)} NM</td></tr>`;
-  $("todAdv").innerHTML= D>0 ? (D>=tot?`<div class="i">Успеваем на малом газе, запас ${r1(D-tot)} NM.</div>`:`<div class="b">Не хватает ${r1(tot-D)} NM: раньше снижение / интерцепторы.</div>`) : `<div class="i">Начать снижение ≈ за ${r1(tot)} NM до цели.</div>`;
-}
-function renderTbl(){
-  const a=apt(), k=kc(), g=FTNM*Math.tan(rad(+a.ga));
-  let h=`<tr><th>D, NM</th><th>AAL</th><th>QNH</th><th>QNH+холод</th></tr>`;
-  for(let d=1;d<=15;d++){ const x=+a.tch+d*g; h+=`<tr><td>${d}</td><td>${fmt(x)}</td><td>${fmt(+a.elev+x)}</td><td>${fmt(+a.elev+x*k)}</td></tr>`; }
-  $("tGS").innerHTML=h;
-  const an=[2.5,3,3.5,4]; let v=`<tr><th>GS</th>${an.map(x=>`<th>${x}°</th>`).join("")}</tr>`;
-  for(let gs=100;gs<=280;gs+=20) v+=`<tr><td>${gs}</td>${an.map(x=>`<td>${fmt(gs*101.27*Math.tan(rad(x)))}</td>`).join("")}</tr>`;
-  $("tVS").innerHTML=v;
-}
+  // Height above aerodrome level (AAL), cold corrected
+  const hAal = Math.max(0, H - elev) / kCold;
 
-/* ---------------- навигация ---------------- */
-function setView(v){ S.view=v; save(); document.querySelectorAll("#top [data-v]").forEach(b=>b.classList.toggle("on",b.dataset.v===v)); document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v)); if(v==="app") render(); window.scrollTo(0,0); }
-function theme(){ if(S.theme==="dark") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme",S.theme); document.querySelectorAll("#top [data-t]").forEach(b=>b.classList.toggle("on",b.dataset.t===S.theme)); }
+  // Speeds
+  const vapp = Number(S.ac_vapp) || 136;
+  const vs = Number(S.ac_vs) || 186;
+  const vint = S.tech === "early" ? vapp : vs;
 
-function init(){
-  load(); keypad(); bindSet(); theme(); renderSet(); renderWind();
-  $("top").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return;
-    if(b.dataset.v) setView(b.dataset.v); else if(b.dataset.go) setView(b.dataset.go); else if(b.dataset.t){ S.theme=b.dataset.t; save(); theme(); render(); } });
-  $("modeSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; commit(); S.mode=b.dataset.m; S.sel=MODEF[S.mode][0]; save(); renderFields(); render(); });
-  $("cfgSeg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; S.cfg=b.dataset.c; save(); renderFields(); render(); });
-  $("wsrc").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; commit(); S.wsrc=b.dataset.w; save(); renderFields(); render(); });
-  $("keypad").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) onKey(b.dataset.k); });
-  $("fields").addEventListener("click",e=>{
-    const sb=e.target.closest("button[data-s]");
-    if(sb){ commit(); const k=sb.dataset.s; let v=N(k)+parseFloat(sb.dataset.v); if(!FIELD[k].neg) v=Math.max(0,v); S[k]=Math.round(v*10)/10; S.sel=k; save(); renderFields(); render(); return; }
-    const pb=e.target.closest("button[data-pt]"); if(pb){ S.pt=+pb.dataset.pt; save(); renderFields(); render(); return; }
-    const f=e.target.closest(".fld[data-f]"); if(f){ commit(); S.sel=f.dataset.f; typing=null; save(); renderFields(); }
+  // Ground Speed & TAS
+  const tasNow = calcTas(V, H, S.oat, elev);
+  const gsNow = Math.max(60, tasNow - W);
+  const fTasGs = tasNow / gsNow;
+
+  // 1. Stabilization Gate Distance
+  const dGate = (hs - tch) / gsFtPerNm;
+
+  // 2. Deceleration on Glide Slope (if decelerated approach)
+  const dDecGs = S.tech === "early" ? 0 : Math.max(0, vint - vapp) / S.r_gs / fTasGs;
+
+  // 3. Glide Slope Intercept Point
+  const dInt = dGate + dDecGs;
+  const hInt = tch + dInt * gsFtPerNm;
+
+  // Altitude & Speed to lose before intercept
+  const dH = Math.max(0, hAal - hInt);
+  const dV = Math.max(0, V - vint);
+
+  // Current Glide Path Altitude at distance D
+  const gsAltHere = elev + (tch + D * gsFtPerNm) * kCold;
+  const vdev = H - gsAltHere;
+
+  // Required V/S and FPA right now
+  const availDistToDesc = D - dInt;
+  let reqVs, reqFpa;
+
+  if (dH > 0 && availDistToDesc > 0.1) {
+    reqVs = (dH / availDistToDesc) * (gsNow / 60);
+    reqFpa = deg(Math.atan(dH / (availDistToDesc * FT_NM)));
+  } else {
+    // Already on or below glide slope
+    reqVs = gsNow * 101.27 * Math.tan(rad(ga));
+    reqFpa = ga;
+  }
+
+  // 3 Aerodynamic Scenarios
+  const scenarios = [
+    { name: "CLEAN 2.5°", g: S.g_clean, r: S.r_clean },
+    { name: "+ ИНТЕРЦЕПТ.", g: S.g_spdbk, r: S.r_spdbk },
+    { name: "ШАССИ+ИНТЕРЦ.", g: S.g_gear, r: S.r_gear }
+  ];
+
+  const results = scenarios.map((sc) => {
+    const gGround = FT_NM * Math.tan(rad(sc.g)) * fTasGs;
+    const rGround = sc.r * fTasGs;
+    const dDesc = gGround > 0 ? dH / gGround : 0;
+    const dDec = rGround > 0 ? dV / rGround : 0;
+    const need = dInt + dDesc + dDec;
+    const margin = D - need;
+    return { ...sc, need, margin };
   });
-  refreshAll(); setView(S.view||"app");
-  if("serviceWorker" in navigator && /^https?:/.test(location.protocol)) navigator.serviceWorker.register("sw.js").catch(()=>{});
+
+  return {
+    D, H, V, W, elev, ga, tch, hs,
+    hAal, dInt, hInt, dH, dV,
+    tasNow, gsNow, gsAltHere, vdev,
+    reqVs, reqFpa,
+    results
+  };
 }
+
+// UI Rendering
+function renderUI() {
+  const c = computeProfile();
+
+  // 1. Update Chips
+  document.getElementById("chipRwyName").textContent = S.rwy_name;
+  document.getElementById("chipRwyElev").textContent = S.rwy_elev;
+  document.getElementById("chipRwyGa").textContent = Number(S.rwy_ga).toFixed(1);
+  document.getElementById("chipAcType").textContent = ({
+    "320c": "A320ceo", "320n": "A320neo", "321c": "A321ceo", "321n": "A321neo"
+  })[S.ac_type] || S.ac_type;
+  document.getElementById("chipAcGw").textContent = S.ac_gw;
+  document.getElementById("chipAcVapp").textContent = S.ac_vapp;
+
+  // 2. Update 4 Field Cards
+  document.getElementById("val_D").textContent = Number(S.D).toFixed(1);
+  document.getElementById("val_H").textContent = formatNumber(Math.round(S.H));
+  document.getElementById("val_V").textContent = Math.round(S.V);
+  const wSign = S.W > 0 ? "+" : (S.W < 0 ? "−" : "±");
+  document.getElementById("val_W").textContent = `${wSign}${Math.abs(Math.round(S.W))}`;
+
+  // 3. Verdict Banner & Scenarios
+  const [sc0, sc1, sc2] = c.results;
+  let statusClass = "status-ok";
+  let title = "УСПЕВАЕМ";
+  let subtitle = `Малый газ (CLEAN). Запас ${fmtMargin(sc0.margin)}`;
+
+  if (sc0.margin >= 1.5) {
+    statusClass = "status-ok";
+    title = "УСПЕВАЕМ";
+    subtitle = `Малый газ (CLEAN). Запас ${fmtMargin(sc0.margin)}`;
+  } else if (sc0.margin >= 0) {
+    statusClass = "status-warn";
+    title = "НА ГРАНИ";
+    subtitle = `Снижаться СЕЙЧАС (запас ${fmtMargin(sc0.margin)}). Интерцепторы дадут ${fmtMargin(sc1.margin)}`;
+  } else if (sc1.margin >= 0) {
+    statusClass = "status-warn";
+    title = "SPEED BRAKES";
+    subtitle = `Выпустить интерцепторы. Запас ${fmtMargin(sc1.margin)} (без них дефицит ${fmtMargin(sc0.margin)})`;
+  } else if (sc2.margin >= 0) {
+    statusClass = "status-orange";
+    title = "ШАССИ + ИНТЕРЦ.";
+    subtitle = `Шасси (≤ 220 kt) + механизация + интерцепторы. Запас ${fmtMargin(sc2.margin)}`;
+  } else {
+    statusClass = "status-danger";
+    title = "НЕ УСПЕВАЕМ";
+    const deficit = Math.abs(sc2.margin).toFixed(1);
+    subtitle = `Дефицит пути: запросить у ATC минимум +${deficit} NM или орбиту`;
+  }
+
+  const vBanner = document.getElementById("verdictBanner");
+  vBanner.className = `verdict-banner ${statusClass}`;
+  document.getElementById("verdictTitle").textContent = title;
+  document.getElementById("verdictSub").textContent = subtitle;
+
+  // 4. Metrics
+  document.getElementById("reqVsVal").textContent = `−${formatNumber(Math.round(c.reqVs))}`;
+  document.getElementById("reqFpaVal").textContent = `FPA: −${c.reqFpa.toFixed(1)}°`;
+  document.getElementById("gsVal").textContent = `${Math.round(c.gsNow)} kt`;
+  document.getElementById("tasVal").textContent = `TAS ${Math.round(c.tasNow)}`;
+  document.getElementById("gsAltVal").textContent = `${formatNumber(Math.round(c.gsAltHere))}'`;
+  
+  const devDiff = Math.round(c.vdev);
+  if (Math.abs(devDiff) < 50) {
+    document.getElementById("vdevVal").textContent = "На глиссаде";
+    document.getElementById("vdevVal").style.color = "var(--ok)";
+  } else if (devDiff > 0) {
+    document.getElementById("vdevVal").textContent = `Выше G/S (+${formatNumber(devDiff)} ft)`;
+    document.getElementById("vdevVal").style.color = "var(--warn)";
+  } else {
+    document.getElementById("vdevVal").textContent = `Ниже G/S (${formatNumber(devDiff)} ft)`;
+    document.getElementById("vdevVal").style.color = "var(--accent)";
+  }
+
+  // 5. Scenarios Box Update
+  c.results.forEach((sc, i) => {
+    const elMargin = document.getElementById(`scMargin${i}`);
+    const elReq = document.getElementById(`scReq${i}`);
+    elMargin.textContent = fmtMargin(sc.margin);
+    elMargin.className = `sc-margin ${sc.margin >= 0 ? "pos" : "neg"}`;
+    elReq.textContent = `нужно ${sc.need.toFixed(1)} NM`;
+  });
+}
+
+function fmtMargin(val) {
+  const rounded = Math.round(val * 10) / 10;
+  return (rounded >= 0 ? "+" : "−") + Math.abs(rounded).toFixed(1) + " NM";
+}
+
+function formatNumber(num) {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
+// Steppers Logic
+function stepVal(key, delta) {
+  if (key === "D") {
+    S.D = Math.max(0.5, Math.round((Number(S.D) + delta) * 10) / 10);
+  } else if (key === "H") {
+    S.H = Math.max(0, Math.round(Number(S.H) + delta));
+  } else if (key === "V") {
+    S.V = Math.max(100, Math.min(350, Math.round(Number(S.V) + delta)));
+  } else if (key === "W") {
+    S.W = Math.max(-60, Math.min(80, Math.round(Number(S.W) + delta)));
+  }
+  saveState();
+  renderUI();
+}
+
+function toggleWindSign() {
+  S.W = -Number(S.W);
+  saveState();
+  renderUI();
+}
+
+// Numpad Drawer Logic
+let activeField = null;
+let numpadBuffer = "";
+
+function openNumpad(fieldKey) {
+  activeField = fieldKey;
+  numpadBuffer = "";
+  const titles = {
+    D: "ВВОД TRACK MILES (NM)",
+    H: "ВВОД ВЫСОТЫ (FT)",
+    V: "ВВОД ПРИБОРНОЙ СКОРОСТИ (KT)",
+    W: "ВВОД ВЕТРА (+ ВСТРЕЧНЫЙ / − ПОПУТНЫЙ)"
+  };
+  document.getElementById("numpadTitle").textContent = titles[fieldKey] || "ВВОД ЗНАЧЕНИЯ";
+  document.getElementById("numpadScreen").textContent = String(S[fieldKey]);
+  document.querySelectorAll(".field-card").forEach(c => c.classList.remove("selected"));
+  document.getElementById(`card_${fieldKey}`).classList.add("selected");
+  document.getElementById("numpadModal").classList.add("open");
+}
+
+function closeNumpad() {
+  document.getElementById("numpadModal").classList.remove("open");
+  document.querySelectorAll(".field-card").forEach(c => c.classList.remove("selected"));
+  activeField = null;
+}
+
+function numKey(k) {
+  if (!activeField) return;
+  const screen = document.getElementById("numpadScreen");
+
+  if (k === "OK") {
+    if (numpadBuffer !== "") {
+      let val = parseFloat(numpadBuffer);
+      if (isFinite(val)) {
+        if (activeField === "D") S.D = Math.max(0.1, val);
+        else if (activeField === "H") S.H = Math.max(0, Math.round(val));
+        else if (activeField === "V") S.V = Math.max(80, Math.min(350, Math.round(val)));
+        else if (activeField === "W") S.W = val;
+        saveState();
+        renderUI();
+      }
+    }
+    closeNumpad();
+    return;
+  }
+
+  if (k === "C") {
+    numpadBuffer = "";
+    screen.textContent = "0";
+    return;
+  }
+
+  if (k === "BS") {
+    numpadBuffer = numpadBuffer.slice(0, -1);
+    screen.textContent = numpadBuffer || "0";
+    return;
+  }
+
+  if (k === "PM") {
+    if (activeField === "W") {
+      if (numpadBuffer.startsWith("-")) {
+        numpadBuffer = numpadBuffer.slice(1);
+      } else {
+        numpadBuffer = "-" + numpadBuffer;
+      }
+      screen.textContent = numpadBuffer || "0";
+    }
+    return;
+  }
+
+  if (k === ".") {
+    if (activeField === "H" || activeField === "V") return; // integer only
+    if (!numpadBuffer.includes(".")) {
+      numpadBuffer = (numpadBuffer || "0") + ".";
+      screen.textContent = numpadBuffer;
+    }
+    return;
+  }
+
+  // Digits
+  if (numpadBuffer.length < 6) {
+    if (numpadBuffer === "0" && k !== ".") numpadBuffer = "";
+    numpadBuffer += k;
+    screen.textContent = numpadBuffer;
+  }
+}
+
+// Settings Bottom Sheet
+function openSettings(focusSection) {
+  document.getElementById("cfg_rwy_name").value = S.rwy_name;
+  document.getElementById("cfg_rwy_elev").value = S.rwy_elev;
+  document.getElementById("cfg_rwy_ga").value = S.rwy_ga;
+  document.getElementById("cfg_rwy_tch").value = S.rwy_tch;
+
+  document.getElementById("cfg_ac_type").value = S.ac_type;
+  document.getElementById("cfg_ac_gw").value = S.ac_gw;
+  document.getElementById("cfg_ac_vapp").value = S.ac_vapp;
+  document.getElementById("cfg_ac_vs").value = S.ac_vs;
+
+  document.getElementById("cfg_hs").value = S.hs;
+  document.getElementById("cfg_tech").value = S.tech;
+  document.getElementById("cfg_oat").value = S.oat;
+  document.getElementById("cfg_cold").value = S.cold;
+
+  document.getElementById("settingsModal").classList.add("open");
+}
+
+function closeSettings() {
+  S.rwy_name = document.getElementById("cfg_rwy_name").value || "RWY";
+  S.rwy_elev = Number(document.getElementById("cfg_rwy_elev").value) || 0;
+  S.rwy_ga = Number(document.getElementById("cfg_rwy_ga").value) || 3.0;
+  S.rwy_tch = Number(document.getElementById("cfg_rwy_tch").value) || 50;
+
+  S.ac_type = document.getElementById("cfg_ac_type").value;
+  S.ac_gw = Number(document.getElementById("cfg_ac_gw").value) || 64;
+  S.ac_vapp = Number(document.getElementById("cfg_ac_vapp").value) || 136;
+  S.ac_vs = Number(document.getElementById("cfg_ac_vs").value) || 186;
+
+  S.hs = Number(document.getElementById("cfg_hs").value) || 1000;
+  S.tech = document.getElementById("cfg_tech").value;
+  S.oat = Number(document.getElementById("cfg_oat").value) || 15;
+  S.cold = document.getElementById("cfg_cold").value;
+
+  saveState();
+  renderUI();
+  document.getElementById("settingsModal").classList.remove("open");
+}
+
+function closeModalOnOverlay(e, modalId) {
+  if (e.target.id === modalId) {
+    if (modalId === "settingsModal") closeSettings();
+    else if (modalId === "numpadModal") closeNumpad();
+  }
+}
+
+function resetToDefaults() {
+  if (confirm("Сбросить все параметры к типовым значениям A320?")) {
+    S = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    saveState();
+    renderUI();
+  }
+}
+
+// Initial Boot
+function init() {
+  loadState();
+  renderUI();
+
+  // Service Worker for offline PWA
+  if ("serviceWorker" in navigator && /^https?:/.test(location.protocol)) {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  }
+}
+
 init();
 </script>
 </body>
