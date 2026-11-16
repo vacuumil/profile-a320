@@ -1,5 +1,7 @@
-// Офлайн-кэш: после первого открытия приложение работает в полете полностью без интернета.
-const CACHE = "vector-a320-v5";
+// Офлайн-кэш: PWA для iPad.
+// Используем Network-First для HTML-страниц (чтобы обновления подтягивались мгновенно при наличии сети)
+// и Cache-First для офлайна в полете.
+const CACHE = "vector-a320-v7";
 const FILES = [
   "./",
   "./index.html",
@@ -10,8 +12,9 @@ const FILES = [
 ];
 
 self.addEventListener("install", (e) => {
+  self.skipWaiting();
   e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting())
+    caches.open(CACHE).then((c) => c.addAll(FILES))
   );
 });
 
@@ -25,18 +28,38 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
-  e.respondWith(
-    caches.match(e.request, { ignoreSearch: true }).then((cached) => {
-      return (
-        cached ||
-        fetch(e.request)
-          .then((resp) => {
+
+  const url = new URL(e.request.url);
+
+  // Для HTML / навигации — сначала сеть (Network-First), если нет сети — кэш
+  if (e.request.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname.endsWith("/")) {
+    e.respondWith(
+      fetch(e.request)
+        .then((resp) => {
+          if (resp && resp.status === 200) {
             const copy = resp.clone();
             caches.open(CACHE).then((c) => c.put(e.request, copy));
-            return resp;
-          })
-          .catch(() => caches.match("./index.html"))
-      );
+          }
+          return resp;
+        })
+        .catch(() => {
+          return caches.match(e.request).then((cached) => cached || caches.match("./index.html"));
+        })
+    );
+    return;
+  }
+
+  // Для остальных ресурсов (иконки, манифест) — кэш с обновлением
+  e.respondWith(
+    caches.match(e.request).then((cached) => {
+      const fetchPromise = fetch(e.request).then((resp) => {
+        if (resp && resp.status === 200) {
+          const copy = resp.clone();
+          caches.open(CACHE).then((c) => c.put(e.request, copy));
+        }
+        return resp;
+      }).catch(() => {});
+      return cached || fetchPromise;
     })
   );
 });

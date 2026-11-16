@@ -533,6 +533,7 @@ body {
     <button class="chip" id="btnAcChip" onclick="openSettings('ac')">
       ✈️ <span id="chipAcType">A320ceo</span> · <span id="chipAcGw">64</span>t · VAPP <span id="chipAcVapp">136</span>
     </button>
+    <span class="chip" style="opacity:0.7;font-size:11px;" id="verBadge" onclick="forceAppUpdate()">v2.1 ↻</span>
   </div>
   <button class="btn-reset" onclick="resetToDefaults()" title="Сбросить к типовым">↺</button>
 </header>
@@ -1300,14 +1301,36 @@ function resetToDefaults() {
   }
 }
 
+function forceAppUpdate() {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      for (const r of regs) r.unregister();
+      window.location.reload(true);
+    });
+  } else {
+    window.location.reload(true);
+  }
+}
+
 // Initial Boot
 function init() {
   loadState();
   renderUI();
 
-  // Service Worker for offline PWA
+  // Service Worker for offline PWA with aggressive update check
   if ("serviceWorker" in navigator && /^https?:/.test(location.protocol)) {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
+    navigator.serviceWorker.register("sw.js?v=7").then(reg => {
+      reg.update();
+      reg.addEventListener("updatefound", () => {
+        const newWorker = reg.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener("statechange", () => {
+          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+            window.location.reload();
+          }
+        });
+      });
+    }).catch(() => {});
   }
 }
 
