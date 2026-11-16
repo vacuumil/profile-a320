@@ -88,6 +88,7 @@ body {
 }
 .chip:active { background: var(--key-active); }
 .chip-accent { border-color: var(--accent); color: var(--accent); }
+.chip-target { border-color: #a855f7; color: #d8b4fe; }
 .btn-reset {
   background: var(--card);
   border: 1px solid var(--border);
@@ -123,14 +124,14 @@ body {
   gap: 3px;
 }
 .verdict-title {
-  font-size: clamp(24px, 4.5vw, 36px);
+  font-size: clamp(23px, 4.2vw, 34px);
   font-weight: 900;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   line-height: 1.1;
 }
 .verdict-subtitle {
-  font-size: clamp(14px, 2.2vw, 17px);
+  font-size: clamp(13px, 2.1vw, 16px);
   font-weight: 600;
   opacity: 0.95;
 }
@@ -148,7 +149,7 @@ body {
 /* Metrics Row inside Result Card */
 .result-metrics {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
+  grid-template-columns: 1.25fr 1fr 1fr;
   gap: 8px;
   margin-bottom: 10px;
   background: var(--card-sub);
@@ -168,7 +169,7 @@ body {
   letter-spacing: 0.05em;
 }
 .metric-val {
-  font-size: clamp(18px, 2.8vw, 24px);
+  font-size: clamp(17px, 2.7vw, 23px);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--tx);
@@ -197,10 +198,6 @@ body {
   flex-direction: column;
   justify-content: space-between;
 }
-.sc-box.active {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
-}
 .sc-title {
   font-size: 11px;
   font-weight: 700;
@@ -208,7 +205,7 @@ body {
   margin-bottom: 2px;
 }
 .sc-margin {
-  font-size: clamp(16px, 2.4vw, 22px);
+  font-size: clamp(15px, 2.3vw, 21px);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
@@ -263,19 +260,49 @@ body {
   font-weight: 600;
   color: var(--tx-muted);
 }
+.field-toggle-mode {
+  display: flex;
+  gap: 4px;
+  background: var(--card-sub);
+  padding: 2px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.field-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--tx-muted);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.field-toggle-btn.active {
+  background: var(--accent);
+  color: #021422;
+}
 .field-display {
   display: flex;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding: 6px 0;
+  padding: 4px 0 6px;
   cursor: pointer;
 }
 .field-number {
-  font-size: clamp(32px, 5.2vw, 44px);
+  font-size: clamp(30px, 5vw, 42px);
   font-weight: 900;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
   color: var(--tx);
+  line-height: 1.1;
+}
+.field-subval {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tx-muted);
+  margin-top: 2px;
 }
 .field-display:active .field-number {
   color: var(--accent);
@@ -500,6 +527,9 @@ body {
     <button class="chip chip-accent" id="btnRwyChip" onclick="openSettings('rwy')">
       🛬 <span id="chipRwyName">UUEE 24R</span> · Elev <span id="chipRwyElev">623</span>' · G/S <span id="chipRwyGa">3.0</span>°
     </button>
+    <button class="chip chip-target" id="btnTargetChip" onclick="openSettings('target')">
+      🎯 Рубеж: <span id="chipTargetDist">10.0</span> NM от ВПП
+    </button>
     <button class="chip" id="btnAcChip" onclick="openSettings('ac')">
       ✈️ <span id="chipAcType">A320ceo</span> · <span id="chipAcGw">64</span>t · VAPP <span id="chipAcVapp">136</span>
     </button>
@@ -510,25 +540,25 @@ body {
 <!-- Main Result Card -->
 <section class="result-card" id="resultCard">
   <div class="verdict-banner status-ok" id="verdictBanner">
-    <div class="verdict-title" id="verdictTitle">УСПЕВАЕМ</div>
+    <div class="verdict-title" id="verdictTitle">УСПЕВАЕМ К РУБЕЖУ</div>
     <div class="verdict-subtitle" id="verdictSub">Малый газ (CLEAN). Запас +3.5 NM</div>
   </div>
 
   <div class="result-metrics">
     <div class="metric-box">
-      <div class="metric-lbl">Требуемая V/S</div>
+      <div class="metric-lbl">V/S к рубежу</div>
       <div class="metric-val highlight" id="reqVsVal">−750</div>
       <div class="metric-sub" id="reqFpaVal">FPA: −2.1°</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-lbl">Высота на рубеже</div>
+      <div class="metric-val" id="targetAltVal">3 850'</div>
+      <div class="metric-sub" id="targetSpdVal">IAS: S (186 kt)</div>
     </div>
     <div class="metric-box">
       <div class="metric-lbl">Путевая GS</div>
       <div class="metric-val" id="gsVal">235 kt</div>
       <div class="metric-sub" id="tasVal">TAS 235</div>
-    </div>
-    <div class="metric-box">
-      <div class="metric-lbl">Высота G/S тут</div>
-      <div class="metric-val" id="gsAltVal">5 120'</div>
-      <div class="metric-sub" id="vdevVal">Ниже G/S</div>
     </div>
   </div>
 
@@ -536,31 +566,35 @@ body {
     <div class="sc-box" id="scBox0">
       <div class="sc-title">1. CLEAN 2.5°</div>
       <div class="sc-margin pos" id="scMargin0">+3.5 NM</div>
-      <div class="sc-req" id="scReq0">нужно 18.5</div>
+      <div class="sc-req" id="scReq0">нужно 11.5</div>
     </div>
     <div class="sc-box" id="scBox1">
       <div class="sc-title">2. + ИНТЕРЦЕПТ.</div>
       <div class="sc-margin pos" id="scMargin1">+7.8 NM</div>
-      <div class="sc-req" id="scReq1">нужно 14.2</div>
+      <div class="sc-req" id="scReq1">нужно 7.2</div>
     </div>
     <div class="sc-box" id="scBox2">
       <div class="sc-title">3. ШАССИ+ИНТЕРЦ.</div>
       <div class="sc-margin pos" id="scMargin2">+9.6 NM</div>
-      <div class="sc-req" id="scReq2">нужно 12.4</div>
+      <div class="sc-req" id="scReq2">нужно 5.4</div>
     </div>
   </div>
 </section>
 
 <!-- 4 Primary Input Fields -->
 <main class="inputs-container">
-  <!-- 1. Track Miles -->
+  <!-- 1. Track Miles with Target / THR Toggle -->
   <div class="field-card" id="card_D">
     <div class="field-head">
-      <span class="field-label">Track Miles (до порога)</span>
+      <div class="field-toggle-mode">
+        <button class="field-toggle-btn active" id="btnModeFix" onclick="setDistMode('fix')">ДО РУБЕЖА</button>
+        <button class="field-toggle-btn" id="btnModeThr" onclick="setDistMode('thr')">ДО ВПП</button>
+      </div>
       <span class="field-unit">NM</span>
     </div>
     <div class="field-display" onclick="openNumpad('D')">
-      <div class="field-number" id="val_D">22.0</div>
+      <div class="field-number" id="val_D">15.0</div>
+      <div class="field-subval" id="sub_D">= 25.0 NM до порога ВПП</div>
     </div>
     <div class="field-steppers">
       <button class="btn-step" onclick="stepVal('D', -5)">−5</button>
@@ -577,7 +611,8 @@ body {
       <span class="field-unit">ft / QNH</span>
     </div>
     <div class="field-display" onclick="openNumpad('H')">
-      <div class="field-number" id="val_H">5 000</div>
+      <div class="field-number" id="val_H">6 000</div>
+      <div class="field-subval" id="sub_H">ΔH к рубежу: 2 150 ft</div>
     </div>
     <div class="field-steppers">
       <button class="btn-step" onclick="stepVal('H', -1000)">−1k</button>
@@ -595,6 +630,7 @@ body {
     </div>
     <div class="field-display" onclick="openNumpad('V')">
       <div class="field-number" id="val_V">220</div>
+      <div class="field-subval" id="sub_V">Цель на рубеже: 186 kt (S)</div>
     </div>
     <div class="field-steppers">
       <button class="btn-step" onclick="stepVal('V', -10)">−10</button>
@@ -612,6 +648,7 @@ body {
     </div>
     <div class="field-display" onclick="openNumpad('W')">
       <div class="field-number" id="val_W">+0</div>
+      <div class="field-subval" id="sub_W">Штиль</div>
     </div>
     <div class="field-steppers">
       <button class="btn-step" onclick="stepVal('W', -10)">−10</button>
@@ -625,7 +662,7 @@ body {
 <!-- Footer / Settings Button -->
 <footer class="footer-bar">
   <button class="btn-settings-open" onclick="openSettings()">
-    ⚙️ Настройки (ВПП, самолет, погода)
+    ⚙️ Настройки (Рубеж, ВПП, самолет, погода)
   </button>
 </footer>
 
@@ -635,6 +672,31 @@ body {
     <div class="sheet-header">
       <div class="sheet-title">Параметры захода и самолета</div>
       <button class="btn-close" onclick="closeSettings()">Готово ✓</button>
+    </div>
+
+    <!-- Target Fix / Intercept Point -->
+    <div class="setting-section">
+      <div class="section-title">Целевой рубеж перехвата / стабилизации</div>
+      <div class="settings-grid">
+        <div class="setting-item">
+          <label>Удаление рубежа от ВПП (NM)</label>
+          <input type="number" step="0.5" id="cfg_target_dist" value="10.0">
+        </div>
+        <div class="setting-item">
+          <label>Скорость на рубеже</label>
+          <select id="cfg_target_spd">
+            <option value="S">S speed (CONF 1)</option>
+            <option value="F">F speed (CONF 2)</option>
+            <option value="APP">VAPP (Посадочная)</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:6px;">
+        <button class="field-toggle-btn" style="background:var(--key-bg);color:var(--tx);padding:6px 10px;" onclick="setPresetFix(6.0)">6 NM (FAF)</button>
+        <button class="field-toggle-btn" style="background:var(--key-bg);color:var(--tx);padding:6px 10px;" onclick="setPresetFix(8.0)">8 NM</button>
+        <button class="field-toggle-btn" style="background:var(--key-bg);color:var(--tx);padding:6px 10px;" onclick="setPresetFix(10.0)">10 NM (стандарт)</button>
+        <button class="field-toggle-btn" style="background:var(--key-bg);color:var(--tx);padding:6px 10px;" onclick="setPresetFix(12.0)">12 NM</button>
+      </div>
     </div>
 
     <!-- Runway -->
@@ -690,20 +752,13 @@ body {
 
     <!-- Stabilization & Environment -->
     <div class="setting-section">
-      <div class="section-title">Стабилизация и внешняя среда</div>
+      <div class="section-title">Условия и среда</div>
       <div class="settings-grid">
         <div class="setting-item">
-          <label>Высота стабилизации</label>
+          <label>Высота стабилизации на ВПП</label>
           <select id="cfg_hs">
             <option value="1000">1000 ft AAL (IMC)</option>
             <option value="500">500 ft AAL (VMC)</option>
-          </select>
-        </div>
-        <div class="setting-item">
-          <label>Техника захода</label>
-          <select id="cfg_tech">
-            <option value="dec">Decelerated (стандарт)</option>
-            <option value="early">Early Stabilized</option>
           </select>
         </div>
         <div class="setting-item">
@@ -711,7 +766,7 @@ body {
           <input type="number" id="cfg_oat" value="15">
         </div>
         <div class="setting-item">
-          <label>Холодная коррекция</label>
+          <label>Холодная коррекция высотомера</label>
           <select id="cfg_cold">
             <option value="1">Да (по FCTM)</option>
             <option value="0">Выкл</option>
@@ -761,11 +816,19 @@ const rad = d => d * Math.PI / 180;
 const deg = r => r * 180 / Math.PI;
 
 const DEFAULT_STATE = {
-  // 4 Primary Inputs
-  D: 22.0,      // Track Miles (NM)
-  H: 5000,      // Altitude (ft)
-  V: 220,       // IAS (kt)
-  W: 0,         // Wind component (kt, +headwind, -tailwind)
+  // Distance mode: 'fix' (distance to target intercept fix) or 'thr' (distance to runway threshold)
+  dist_mode: "fix",
+  D_fix: 15.0,        // Track miles to target fix (NM)
+  D_thr: 25.0,        // Track miles to threshold (NM)
+
+  // Primary Inputs
+  H: 6000,            // Altitude (ft)
+  V: 220,             // IAS (kt)
+  W: 0,               // Wind component (kt, +headwind, -tailwind)
+
+  // Target Intercept Fix
+  target_dist: 10.0,  // Distance of target fix from runway threshold (NM)
+  target_spd: "S",    // Target speed at fix: 'S', 'F', 'APP'
 
   // Runway & Approach
   rwy_name: "UUEE 24R",
@@ -778,10 +841,10 @@ const DEFAULT_STATE = {
   ac_gw: 64.0,
   ac_vapp: 136,
   ac_vs: 186,
+  ac_vf: 151,
 
   // Stabilization & Env
   hs: 1000,
-  tech: "dec",
   oat: 15,
   cold: "1",
 
@@ -791,12 +854,11 @@ const DEFAULT_STATE = {
   g_gear: 4.2,
   r_clean: 10.0,
   r_spdbk: 20.0,
-  r_gear: 22.0,
-  r_gs: 10.0
+  r_gear: 22.0
 };
 
 let S = JSON.parse(JSON.stringify(DEFAULT_STATE));
-const STORAGE_KEY = "a320_vector_profile_v1";
+const STORAGE_KEY = "a320_vector_profile_v2";
 
 function loadState() {
   try {
@@ -835,13 +897,23 @@ function getColdFactor() {
   return 1.0 - 0.004 * disa;
 }
 
-// Main Flight Profile Computation
+// Main Flight Profile Computation targeting the Target Fix
 function computeProfile() {
   const elev = Number(S.rwy_elev) || 0;
   const ga = Number(S.rwy_ga) || 3.0;
   const tch = Number(S.rwy_tch) || 50;
-  const hs = Number(S.hs) || 1000;
-  const D = Number(S.D) || 0;
+  const dFixFromRwy = Math.max(1.0, Number(S.target_dist) || 10.0);
+
+  // Synchronize distances
+  let dToFix, dToThr;
+  if (S.dist_mode === "fix") {
+    dToFix = Math.max(0, Number(S.D_fix) || 0);
+    dToThr = dToFix + dFixFromRwy;
+  } else {
+    dToThr = Math.max(dFixFromRwy, Number(S.D_thr) || dFixFromRwy);
+    dToFix = Math.max(0, dToThr - dFixFromRwy);
+  }
+
   const H = Number(S.H) || 0;
   const V = Number(S.V) || 0;
   const W = Number(S.W) || 0;
@@ -849,51 +921,37 @@ function computeProfile() {
   const kCold = getColdFactor();
   const gsFtPerNm = FT_NM * Math.tan(rad(ga));
 
-  // Height above aerodrome level (AAL), cold corrected
-  const hAal = Math.max(0, H - elev) / kCold;
+  // Height of 3° Glide Path at the Target Fix
+  const hFixAal = (tch + dFixFromRwy * gsFtPerNm) * kCold;
+  const hFixQnh = elev + hFixAal;
 
-  // Speeds
-  const vapp = Number(S.ac_vapp) || 136;
-  const vs = Number(S.ac_vs) || 186;
-  const vint = S.tech === "early" ? vapp : vs;
+  // Target Speed at the Target Fix
+  let vTarget;
+  if (S.target_spd === "APP") vTarget = Number(S.ac_vapp) || 136;
+  else if (S.target_spd === "F") vTarget = Number(S.ac_vf) || 151;
+  else vTarget = Number(S.ac_vs) || 186; // S speed (CONF 1)
 
   // Ground Speed & TAS
   const tasNow = calcTas(V, H, S.oat, elev);
   const gsNow = Math.max(60, tasNow - W);
   const fTasGs = tasNow / gsNow;
 
-  // 1. Stabilization Gate Distance
-  const dGate = (hs - tch) / gsFtPerNm;
+  // Altitude & Speed to lose BEFORE the Target Fix
+  const dH = Math.max(0, H - hFixQnh);
+  const dV = Math.max(0, V - vTarget);
 
-  // 2. Deceleration on Glide Slope (if decelerated approach)
-  const dDecGs = S.tech === "early" ? 0 : Math.max(0, vint - vapp) / S.r_gs / fTasGs;
-
-  // 3. Glide Slope Intercept Point
-  const dInt = dGate + dDecGs;
-  const hInt = tch + dInt * gsFtPerNm;
-
-  // Altitude & Speed to lose before intercept
-  const dH = Math.max(0, hAal - hInt);
-  const dV = Math.max(0, V - vint);
-
-  // Current Glide Path Altitude at distance D
-  const gsAltHere = elev + (tch + D * gsFtPerNm) * kCold;
-  const vdev = H - gsAltHere;
-
-  // Required V/S and FPA right now
-  const availDistToDesc = D - dInt;
+  // Required V/S and FPA right now to reach the Target Fix on profile
   let reqVs, reqFpa;
-
-  if (dH > 0 && availDistToDesc > 0.1) {
-    reqVs = (dH / availDistToDesc) * (gsNow / 60);
-    reqFpa = deg(Math.atan(dH / (availDistToDesc * FT_NM)));
+  if (dToFix > 0.05 && dH > 0) {
+    reqVs = (dH / dToFix) * (gsNow / 60);
+    reqFpa = deg(Math.atan(dH / (dToFix * FT_NM)));
   } else {
-    // Already on or below glide slope
+    // Standard 3° Glide Path descent rate
     reqVs = gsNow * 101.27 * Math.tan(rad(ga));
     reqFpa = ga;
   }
 
-  // 3 Aerodynamic Scenarios
+  // 3 Aerodynamic Scenarios to reach the Target Fix
   const scenarios = [
     { name: "CLEAN 2.5°", g: S.g_clean, r: S.r_clean },
     { name: "+ ИНТЕРЦЕПТ.", g: S.g_spdbk, r: S.r_spdbk },
@@ -905,15 +963,17 @@ function computeProfile() {
     const rGround = sc.r * fTasGs;
     const dDesc = gGround > 0 ? dH / gGround : 0;
     const dDec = rGround > 0 ? dV / rGround : 0;
-    const need = dInt + dDesc + dDec;
-    const margin = D - need;
-    return { ...sc, need, margin };
+    const needToFix = dDesc + dDec;
+    const margin = dToFix - needToFix;
+    return { ...sc, need: needToFix, margin };
   });
 
   return {
-    D, H, V, W, elev, ga, tch, hs,
-    hAal, dInt, hInt, dH, dV,
-    tasNow, gsNow, gsAltHere, vdev,
+    dToFix, dToThr, dFixFromRwy,
+    H, V, W, elev, ga, tch,
+    hFixAal, hFixQnh, vTarget,
+    dH, dV,
+    tasNow, gsNow,
     reqVs, reqFpa,
     results
   };
@@ -927,44 +987,65 @@ function renderUI() {
   document.getElementById("chipRwyName").textContent = S.rwy_name;
   document.getElementById("chipRwyElev").textContent = S.rwy_elev;
   document.getElementById("chipRwyGa").textContent = Number(S.rwy_ga).toFixed(1);
+  document.getElementById("chipTargetDist").textContent = Number(c.dFixFromRwy).toFixed(1);
+
   document.getElementById("chipAcType").textContent = ({
     "320c": "A320ceo", "320n": "A320neo", "321c": "A321ceo", "321n": "A321neo"
   })[S.ac_type] || S.ac_type;
   document.getElementById("chipAcGw").textContent = S.ac_gw;
   document.getElementById("chipAcVapp").textContent = S.ac_vapp;
 
-  // 2. Update 4 Field Cards
-  document.getElementById("val_D").textContent = Number(S.D).toFixed(1);
+  // 2. Update Mode Toggle on Distance Card
+  const btnFix = document.getElementById("btnModeFix");
+  const btnThr = document.getElementById("btnModeThr");
+  if (S.dist_mode === "fix") {
+    btnFix.classList.add("active");
+    btnThr.classList.remove("active");
+    document.getElementById("val_D").textContent = c.dToFix.toFixed(1);
+    document.getElementById("sub_D").textContent = `= ${c.dToThr.toFixed(1)} NM до порога ВПП (рубеж ${c.dFixFromRwy.toFixed(1)} NM)`;
+  } else {
+    btnFix.classList.remove("active");
+    btnThr.classList.add("active");
+    document.getElementById("val_D").textContent = c.dToThr.toFixed(1);
+    document.getElementById("sub_D").textContent = `= ${c.dToFix.toFixed(1)} NM до рубежа (рубеж ${c.dFixFromRwy.toFixed(1)} NM)`;
+  }
+
+  // 3. Update Other 3 Field Cards
   document.getElementById("val_H").textContent = formatNumber(Math.round(S.H));
+  document.getElementById("sub_H").textContent = c.dH > 0 ? `ΔH к рубежу: −${formatNumber(Math.round(c.dH))} ft` : "На/ниже глиссады рубежа";
+
   document.getElementById("val_V").textContent = Math.round(S.V);
+  document.getElementById("sub_V").textContent = `Цель на рубеже: ${Math.round(c.vTarget)} kt (${S.target_spd})`;
+
   const wSign = S.W > 0 ? "+" : (S.W < 0 ? "−" : "±");
   document.getElementById("val_W").textContent = `${wSign}${Math.abs(Math.round(S.W))}`;
+  document.getElementById("sub_W").textContent = S.W > 0 ? "Встречный" : (S.W < 0 ? "Попутный" : "Штиль");
 
-  // 3. Verdict Banner & Scenarios
+  // 4. Verdict Banner & Scenarios
   const [sc0, sc1, sc2] = c.results;
   let statusClass = "status-ok";
-  let title = "УСПЕВАЕМ";
+  let title = "УСПЕВАЕМ К РУБЕЖУ";
   let subtitle = `Малый газ (CLEAN). Запас ${fmtMargin(sc0.margin)}`;
 
   if (sc0.margin >= 1.5) {
     statusClass = "status-ok";
-    title = "УСПЕВАЕМ";
+    title = "УСПЕВАЕМ К РУБЕЖУ";
     subtitle = `Малый газ (CLEAN). Запас ${fmtMargin(sc0.margin)}`;
   } else if (sc0.margin >= 0) {
     statusClass = "status-warn";
-    title = "НА ГРАНИ";
+    title = "НА ГРАНИ К РУБЕЖУ";
     subtitle = `Снижаться СЕЙЧАС (запас ${fmtMargin(sc0.margin)}). Интерцепторы дадут ${fmtMargin(sc1.margin)}`;
   } else if (sc1.margin >= 0) {
     statusClass = "status-warn";
     title = "SPEED BRAKES";
-    subtitle = `Выпустить интерцепторы. Запас ${fmtMargin(sc1.margin)} (без них дефицит ${fmtMargin(sc0.margin)})`;
+    subtitle = `Интерцепторы до рубежа. Запас ${fmtMargin(sc1.margin)} (без них дефицит ${fmtMargin(sc0.margin)})`;
   } else if (sc2.margin >= 0) {
     statusClass = "status-orange";
     title = "ШАССИ + ИНТЕРЦ.";
     subtitle = `Шасси (≤ 220 kt) + механизация + интерцепторы. Запас ${fmtMargin(sc2.margin)}`;
   } else {
     statusClass = "status-danger";
-    title = "НЕ УСПЕВАЕМ";
+    title = "НЕ УСПЕВАЕМ К РУБЕЖУ";
     const deficit = Math.abs(sc2.margin).toFixed(1);
     subtitle = `Дефицит пути: запросить у ATC минимум +${deficit} NM или орбиту`;
   }
@@ -974,26 +1055,15 @@ function renderUI() {
   document.getElementById("verdictTitle").textContent = title;
   document.getElementById("verdictSub").textContent = subtitle;
 
-  // 4. Metrics
+  // 5. Metrics
   document.getElementById("reqVsVal").textContent = `−${formatNumber(Math.round(c.reqVs))}`;
   document.getElementById("reqFpaVal").textContent = `FPA: −${c.reqFpa.toFixed(1)}°`;
+  document.getElementById("targetAltVal").textContent = `${formatNumber(Math.round(c.hFixQnh))}'`;
+  document.getElementById("targetSpdVal").textContent = `IAS: ${Math.round(c.vTarget)} kt (${S.target_spd})`;
   document.getElementById("gsVal").textContent = `${Math.round(c.gsNow)} kt`;
   document.getElementById("tasVal").textContent = `TAS ${Math.round(c.tasNow)}`;
-  document.getElementById("gsAltVal").textContent = `${formatNumber(Math.round(c.gsAltHere))}'`;
-  
-  const devDiff = Math.round(c.vdev);
-  if (Math.abs(devDiff) < 50) {
-    document.getElementById("vdevVal").textContent = "На глиссаде";
-    document.getElementById("vdevVal").style.color = "var(--ok)";
-  } else if (devDiff > 0) {
-    document.getElementById("vdevVal").textContent = `Выше G/S (+${formatNumber(devDiff)} ft)`;
-    document.getElementById("vdevVal").style.color = "var(--warn)";
-  } else {
-    document.getElementById("vdevVal").textContent = `Ниже G/S (${formatNumber(devDiff)} ft)`;
-    document.getElementById("vdevVal").style.color = "var(--accent)";
-  }
 
-  // 5. Scenarios Box Update
+  // 6. Scenarios Box Update
   c.results.forEach((sc, i) => {
     const elMargin = document.getElementById(`scMargin${i}`);
     const elReq = document.getElementById(`scReq${i}`);
@@ -1012,10 +1082,30 @@ function formatNumber(num) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
+// Distance Mode Switcher
+function setDistMode(mode) {
+  S.dist_mode = mode;
+  saveState();
+  renderUI();
+}
+
+function setPresetFix(dist) {
+  S.target_dist = dist;
+  document.getElementById("cfg_target_dist").value = dist;
+  saveState();
+  renderUI();
+}
+
 // Steppers Logic
 function stepVal(key, delta) {
   if (key === "D") {
-    S.D = Math.max(0.5, Math.round((Number(S.D) + delta) * 10) / 10);
+    if (S.dist_mode === "fix") {
+      S.D_fix = Math.max(0, Math.round((Number(S.D_fix) + delta) * 10) / 10);
+      S.D_thr = S.D_fix + Number(S.target_dist);
+    } else {
+      S.D_thr = Math.max(Number(S.target_dist), Math.round((Number(S.D_thr) + delta) * 10) / 10);
+      S.D_fix = Math.max(0, S.D_thr - Number(S.target_dist));
+    }
   } else if (key === "H") {
     S.H = Math.max(0, Math.round(Number(S.H) + delta));
   } else if (key === "V") {
@@ -1040,14 +1130,30 @@ let numpadBuffer = "";
 function openNumpad(fieldKey) {
   activeField = fieldKey;
   numpadBuffer = "";
-  const titles = {
-    D: "ВВОД TRACK MILES (NM)",
-    H: "ВВОД ВЫСОТЫ (FT)",
-    V: "ВВОД ПРИБОРНОЙ СКОРОСТИ (KT)",
-    W: "ВВОД ВЕТРА (+ ВСТРЕЧНЫЙ / − ПОПУТНЫЙ)"
-  };
-  document.getElementById("numpadTitle").textContent = titles[fieldKey] || "ВВОД ЗНАЧЕНИЯ";
-  document.getElementById("numpadScreen").textContent = String(S[fieldKey]);
+  let title = "ВВОД ЗНАЧЕНИЯ";
+  let curVal = "";
+
+  if (fieldKey === "D") {
+    if (S.dist_mode === "fix") {
+      title = "ДИСТАНЦИЯ ДО РУБЕЖА (NM)";
+      curVal = String(S.D_fix);
+    } else {
+      title = "ДИСТАНЦИЯ ДО ВПП (NM)";
+      curVal = String(S.D_thr);
+    }
+  } else if (fieldKey === "H") {
+    title = "ВВОД ВЫСОТЫ (FT)";
+    curVal = String(S.H);
+  } else if (fieldKey === "V") {
+    title = "ВВОД ПРИБОРНОЙ СКОРОСТИ (KT)";
+    curVal = String(S.V);
+  } else if (fieldKey === "W") {
+    title = "ВВОД ВЕТРА (+ ВСТР / − ПОПУТН)";
+    curVal = String(S.W);
+  }
+
+  document.getElementById("numpadTitle").textContent = title;
+  document.getElementById("numpadScreen").textContent = curVal;
   document.querySelectorAll(".field-card").forEach(c => c.classList.remove("selected"));
   document.getElementById(`card_${fieldKey}`).classList.add("selected");
   document.getElementById("numpadModal").classList.add("open");
@@ -1067,8 +1173,15 @@ function numKey(k) {
     if (numpadBuffer !== "") {
       let val = parseFloat(numpadBuffer);
       if (isFinite(val)) {
-        if (activeField === "D") S.D = Math.max(0.1, val);
-        else if (activeField === "H") S.H = Math.max(0, Math.round(val));
+        if (activeField === "D") {
+          if (S.dist_mode === "fix") {
+            S.D_fix = Math.max(0, val);
+            S.D_thr = S.D_fix + Number(S.target_dist);
+          } else {
+            S.D_thr = Math.max(Number(S.target_dist), val);
+            S.D_fix = Math.max(0, S.D_thr - Number(S.target_dist));
+          }
+        } else if (activeField === "H") S.H = Math.max(0, Math.round(val));
         else if (activeField === "V") S.V = Math.max(80, Math.min(350, Math.round(val)));
         else if (activeField === "W") S.W = val;
         saveState();
@@ -1104,7 +1217,7 @@ function numKey(k) {
   }
 
   if (k === ".") {
-    if (activeField === "H" || activeField === "V") return; // integer only
+    if (activeField === "H" || activeField === "V") return;
     if (!numpadBuffer.includes(".")) {
       numpadBuffer = (numpadBuffer || "0") + ".";
       screen.textContent = numpadBuffer;
@@ -1122,6 +1235,9 @@ function numKey(k) {
 
 // Settings Bottom Sheet
 function openSettings(focusSection) {
+  document.getElementById("cfg_target_dist").value = S.target_dist;
+  document.getElementById("cfg_target_spd").value = S.target_spd;
+
   document.getElementById("cfg_rwy_name").value = S.rwy_name;
   document.getElementById("cfg_rwy_elev").value = S.rwy_elev;
   document.getElementById("cfg_rwy_ga").value = S.rwy_ga;
@@ -1133,7 +1249,6 @@ function openSettings(focusSection) {
   document.getElementById("cfg_ac_vs").value = S.ac_vs;
 
   document.getElementById("cfg_hs").value = S.hs;
-  document.getElementById("cfg_tech").value = S.tech;
   document.getElementById("cfg_oat").value = S.oat;
   document.getElementById("cfg_cold").value = S.cold;
 
@@ -1141,6 +1256,9 @@ function openSettings(focusSection) {
 }
 
 function closeSettings() {
+  S.target_dist = Math.max(1.0, Number(document.getElementById("cfg_target_dist").value) || 10.0);
+  S.target_spd = document.getElementById("cfg_target_spd").value;
+
   S.rwy_name = document.getElementById("cfg_rwy_name").value || "RWY";
   S.rwy_elev = Number(document.getElementById("cfg_rwy_elev").value) || 0;
   S.rwy_ga = Number(document.getElementById("cfg_rwy_ga").value) || 3.0;
@@ -1152,9 +1270,15 @@ function closeSettings() {
   S.ac_vs = Number(document.getElementById("cfg_ac_vs").value) || 186;
 
   S.hs = Number(document.getElementById("cfg_hs").value) || 1000;
-  S.tech = document.getElementById("cfg_tech").value;
   S.oat = Number(document.getElementById("cfg_oat").value) || 15;
   S.cold = document.getElementById("cfg_cold").value;
+
+  // Keep distances in sync with new target_dist
+  if (S.dist_mode === "fix") {
+    S.D_thr = S.D_fix + S.target_dist;
+  } else {
+    S.D_fix = Math.max(0, S.D_thr - S.target_dist);
+  }
 
   saveState();
   renderUI();

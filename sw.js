@@ -1,5 +1,5 @@
 // Офлайн-кэш: после первого открытия приложение работает в полете полностью без интернета.
-const CACHE = "vector-a320-v4";
+const CACHE = "vector-a320-v5";
 const FILES = [
   "./",
   "./index.html",
